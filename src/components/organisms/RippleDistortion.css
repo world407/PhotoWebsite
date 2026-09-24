@@ -1,0 +1,31 @@
+/* 覆盖层：absolute inset-0 定位由组件 CSS 自带，宿主容器需为 relative */
+.ripple-distortion {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: transparent;
+  /* 容器接收 pointermove/pointerenter/pointerleave 以触发涟漪；
+     仅监听这三类事件且全部 passive，不 preventDefault/stopPropagation，
+     click 语义照常冒泡，不阻挡原有交互（如 lightbox 按钮位于更高层级） */
+  pointer-events: auto;
+}
+
+.ripple-distortion canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  transition: opacity 500ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.ripple-distortion.is-ready canvas {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ripple-distortion canvas {
+    transition: none;
+  }
+}

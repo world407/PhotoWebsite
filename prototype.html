@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>影·迹 PHOTOGRAPHY — 记录光影 · 发现美好</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          'bg-base': '#0a0a0f',
+          'bg-deep': '#08080c',
+          'bg-card': '#14141c',
+          'bg-card-hover': '#1a1a24',
+          'accent': '#d4a853',
+          'accent-hover': '#e0b866',
+          'text-primary': '#ffffff',
+          'text-secondary': '#a0a0b0',
+          'text-muted': '#6b6b7b',
+          'border-subtle': 'rgba(255,255,255,0.08)',
+        },
+        fontFamily: {
+          sans: ['Inter', '-apple-system', 'PingFang SC', 'Microsoft YaHei', 'sans-serif'],
+        },
+        fontSize: {
+          'display': ['64px', { lineHeight: '1.1', letterSpacing: '-0.02em', fontWeight: '700' }],
+          'h2': ['32px', { lineHeight: '1.25', fontWeight: '600' }],
+          'h3': ['24px', { lineHeight: '1.3', fontWeight: '600' }],
+          'body': ['16px', { lineHeight: '1.7', fontWeight: '400' }],
+          'caption': ['14px', { lineHeight: '1.5', fontWeight: '400' }],
+          'stat': ['28px', { lineHeight: '1', fontWeight: '700' }],
+        },
+        borderRadius: {
+          'nav': '999px',
+          'card': '16px',
+          'btn': '12px',
+          'img': '8px',
+        },
+        boxShadow: {
+          'card': '0 4px 24px rgba(0,0,0,0.3)',
+          'nav': '0 8px 32px rgba(0,0,0,0.4)',
+          'modal': '0 16px 48px rgba(0,0,0,0.5)',
+        },
+        transitionTimingFunction: {
+          'smooth': 'cubic-bezier(0.4, 0, 0.2, 1)',
+        },
+      }
+    }
+  }
+</script>
+<style>
+  html { scroll-behavior: smooth; }
+  body {
+    background: #0a0a0f;
+    background-image: radial-gradient(ellipse at 50% 0%, #12121a 0%, #0a0a0f 70%);
+    min-height: 100vh;
+    color: #ffffff;
+    font-family: 'Inter', -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    overflow-x: hidden;
+  }
+
+  /* 网格纹理 */
+  .grid-texture::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+    background-size: 60px 60px;
+    pointer-events: none;
+  }
+
+  /* 导航双形态 */
+  .nav-header {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .nav-header.scrolled {
+    position: fixed;
+    top: 12px;
+    left: 50%;
+    transform: translateX(-50%);
+    max-width: 1200px;
+    width: calc(100% - 32px);
+    background: rgba(15, 15, 22, 0.75);
+    backdrop-filter: blur(16px) saturate(180%);
+    -webkit-backdrop-filter: blur(16px) saturate(180%);
+    border-radius: 999px;
+    padding: 12px 28px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+    border: 1px solid rgba(255,255,255,0.06);
+  }
+  .nav-header:not(.scrolled) {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    background: transparent;
+    padding: 24px 48px;
+    max-width: none;
+    margin: 0;
+    border-radius: 0;
+    box-shadow: none;
+    transform: none;
+    border: none;
+  }
+
+  /* 导航菜单下划线 */
+  .nav-link {
+    position: relative;
+    transition: color 0.2s ease;
+  }
+  .nav-link::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: -4px;
+    width: 0;
+    height: 2px;
+    background: #d4a853;
+    transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .nav-link:hover::after,
+  .nav-link.active::after {
+    width: 100%;
+  }
+  .nav-link:hover,
+  .nav-link.active {
+    color: #d4a853;
+  }
+
+  /* 移动端导航 */
+  @media (max-width: 767px) {
+    .nav-header.scrolled {
+      max-width: none;
+      width: calc(100% - 32px);
+      margin: 8px 16px;
+      top: 0;
+      transform: none;
+      border-radius: 24px;
+    }
+    .nav-header:not(.scrolled) {
+      padding: 16px 20px;
+    }
+  }
+
+  /* 移动端菜单抽屉 */
+  .mobile-drawer {
+    transform: translateX(100%);
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .mobile-drawer.open {
+    transform: translateX(0);
+  }
+  .mobile-drawer .drawer-item {
+    opacity: 0;
+    transform: translateX(20px);
+    transition: opacity 0.4s ease, transform 0.4s ease;
+  }
+  .mobile-drawer.open .drawer-item {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  .mobile-drawer.open .drawer-item:nth-child(1) { transition-delay: 0.1s; }
+  .mobile-drawer.open .drawer-item:nth-child(2) { transition-delay: 0.15s; }
+  .mobile-drawer.open .drawer-item:nth-child(3) { transition-delay: 0.2s; }
+  .mobile-drawer.open .drawer-item:nth-child(4) { transition-delay: 0.25s; }
+  .mobile-drawer.open .drawer-item:nth-child(5) { transition-delay: 0.3s; }
+  .mobile-drawer.open .drawer-item:nth-child(6) { transition-delay: 0.35s; }
+  .mobile-drawer.open .drawer-item:nth-child(7) { transition-delay: 0.4s; }
+
+  /* 入场动画 */
+  .animate-on-scroll {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+  .animate-on-scroll.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* 卡片悬浮 */
+  .card-hover {
+    transition: all 0.25s ease;
+  }
+  .card-hover:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 4px 24px rgba(0,0,0,0.3);
+  }
+
+  /* Hero 卡片浮动 */
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-4px); }
+  }
+  .float-card {
+    animation: float 3s ease-in-out infinite;
+  }
+  .float-card-delay {
+    animation: float 3s ease-in-out infinite;
+    animation-delay: 0.5s;
+  }
+
+  /* 按钮交互 */
+  .btn-accent {
+    background: #d4a853;
+    color: #1a1a24;
+    transition: all 0.2s ease;
+  }
+  .btn-accent:hover {
+    background: #e0b866;
+    transform: scale(1.02);
+    box-shadow: 0 4px 20px rgba(212, 168, 83, 0.4);
+  }
+  .btn-accent:active {
+    transform: scale(0.98);
+  }
+
+  .btn-outline {
+    background: transparent;
+    border: 1px solid rgba(255,255,255,0.2);
+    color: #ffffff;
+    transition: all 0.2s ease;
+  }
+  .btn-outline:hover {
+    border-color: #d4a853;
+    color: #d4a853;
+    transform: scale(1.02);
+  }
+
+  /* 作品卡片 hover */
+  .work-card {
+    overflow: hidden;
+    border-radius: 8px;
+    transition: all 0.25s ease;
+    break-inside: avoid;
+    margin-bottom: 20px;
+  }
+  .work-card:hover {
+    transform: translateY(-4px);
+  }
+  .work-card .work-img {
+    overflow: hidden;
+  }
+  .work-card img {
+    width: 100%;
+    display: block;
+    transition: transform 0.4s ease;
+  }
+  .work-card:hover img {
+    transform: scale(1.05);
+  }
+  .work-overlay {
+    transform: translateY(100%);
+    transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .work-card:hover .work-overlay {
+    transform: translateY(0);
+  }
+
+  /* 瀑布流 */
+  .waterfall {
+    column-gap: 20px;
+  }
+  @media (min-width: 1200px) { .waterfall { column-count: 3; } }
+  @media (min-width: 768px) and (max-width: 1199px) { .waterfall { column-count: 2; } }
+  @media (max-width: 767px) { .waterfall { column-count: 1; } }
+
+  /* 标签选中态 */
+  .tag-chip {
+    transition: all 0.25s ease;
+  }
+  .tag-chip.active {
+    background: #d4a853;
+    color: #1a1a24;
+    border-color: #d4a853;
+  }
+  .tag-chip:not(.active):hover {
+    border-color: rgba(212,168,83,0.5);
+    color: #d4a853;
+  }
+
+  /* 懒加载占位 */
+  .img-placeholder {
+    background: linear-gradient(135deg, #1a1a24 25%, #22222e 50%, #1a1a24 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+  }
+  @keyframes shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
+
+  /* 浮动按钮 */
+  .fab-rotate:hover {
+    transform: rotate(45deg);
+    transition: transform 0.3s ease;
+  }
+
+  /* 回到顶部 */
+  .back-to-top {
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+  }
+  .back-to-top.visible {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  /* 金色渐变文字 */
+  .text-gradient-gold {
+    background: linear-gradient(135deg, #d4a853 0%, #f0d080 50%, #d4a853 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* 关注按钮 */
+  .btn-follow {
+    border: 1px solid rgba(255,255,255,0.2);
+    transition: all 0.25s ease;
+  }
+  .btn-follow:hover {
+    border-color: #d4a853;
+    color: #d4a853;
+  }
+  .btn-follow.followed {
+    background: #d4a853;
+    color: #1a1a24;
+    border-color: #d4a853;
+  }
+
+  /* 摄影师卡片 */
+  .photographer-card {
+    transition: all 0.25s ease;
+  }
+  .photographer-card:hover {
+    transform: translateY(-4px);
+    background: #1a1a24;
+  }
+  .photographer-card:hover .avatar-ring {
+    border-color: #d4a853;
+  }
+
+  /* 滚动条美化 */
+  ::-webkit-scrollbar { width: 8px; }
+  ::-webkit-scrollbar-track { background: #0a0a0f; }
+  ::-webkit-scrollbar-thumb { background: #2a2a36; border-radius: 4px; }
+  ::-webkit-scrollbar-thumb:hover { background: #3a3a48; }
+
+  /* 减少动画适配 */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+
+  /* 移动端 Hero 布局 */
+  @media (max-width: 767px) {
+    .hero-layout {
+      flex-direction: column !important;
+    }
+    .hero-left, .hero-right {
+      width: 100% !important;
+    }
+    .hero-stats {
+      grid-template-columns: repeat(2, 1fr) !important;
+    }
+  }
+</style>
+</head>
+<body class="antialiased selection:bg-accent/30">
+
+<!-- ========== 导航栏 ========== -->
+<header id="mainNav" class="nav-header z-50">
+  <div class="max-w-[1200px] mx-auto flex items-center justify-between h-full">
+    <!-- Logo -->
+    <a href="#" class="flex items-center gap-2 shrink-0">
+      <span class="inline-block w-2 h-2 rounded-full bg-accent"></span>
+      <span class="text-h3 font-semibold tracking-tight text-text-primary">
+        影·迹 <span class="text-text-muted text-caption font-normal tracking-[0.2em] uppercase">PHOTOGRAPHY</span>
+      </span>
+    </a>
+
+    <!-- 桌面菜单 -->
+    <nav class="hidden md:flex items-center gap-8" aria-label="主导航">
+      <a href="#hero" class="nav-link active text-body text-text-primary">首页</a>
+      <a href="#works" class="nav-link text-body text-text-secondary">探索</a>
+      <a href="#works" class="nav-link text-body text-text-secondary">收藏夹</a>
+      <a href="#photographers" class="nav-link text-body text-text-secondary">摄影师</a>
+    </nav>
+
+    <!-- 右侧操作区 -->
+    <div class="flex items-center gap-3">
+      <!-- 搜索 -->
+      <button class="w-9 h-9 rounded-full flex items-center justify-center text-text-secondary hover:text-text-primary hover:bg-white/5 transition-colors" aria-label="搜索">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      </button>
+
+      <!-- 上传 -->
+      <button class="hidden sm:inline-flex btn-accent px-5 py-2.5 rounded-btn text-body-sm font-semibold items-center gap-2">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        上传作品
+      </button>
+
+      <!-- 头像 -->
+      <button class="w-9 h-9 rounded-full bg-bg-card flex items-center justify-center text-text-secondary hover:text-accent transition-colors" aria-label="用户菜单">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      </button>
+
+      <!-- 汉堡按钮 -->
+      <button id="mobileMenuBtn" class="md:hidden w-9 h-9 rounded-full flex items-center justify-center text-text-secondary hover:text-text-primary hover:bg-white/5 transition-colors" aria-label="打开菜单">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<!-- 移动端抽屉 -->
+<div id="mobileDrawer" class="mobile-drawer fixed inset-0 z-[60] bg-bg-deep/95 backdrop-blur-xl md:hidden flex flex-col">
+  <div class="flex items-center justify-between p-6 border-b border-border-subtle">
+    <span class="text-h3 font-semibold">菜单</span>
+    <button id="mobileCloseBtn" class="w-10 h-10 rounded-full flex items-center justify-center text-text-secondary hover:text-text-primary hover:bg-white/5" aria-label="关闭菜单">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  </div>
+  <nav class="flex flex-col p-6 gap-2 flex-1">
+    <a href="#hero" class="drawer-item nav-link text-h3 text-text-primary py-3 px-4 rounded-lg hover:bg-white/5">首页</a>
+    <a href="#works" class="drawer-item nav-link text-h3 text-text-secondary py-3 px-4 rounded-lg hover:bg-white/5">探索</a>
+    <a href="#works" class="drawer-item nav-link text-h3 text-text-secondary py-3 px-4 rounded-lg hover:bg-white/5">收藏夹</a>
+    <a href="#photographers" class="drawer-item nav-link text-h3 text-text-secondary py-3 px-4 rounded-lg hover:bg-white/5">摄影师</a>
+    <a href="#" class="drawer-item text-h3 text-text-secondary py-3 px-4 rounded-lg hover:bg-white/5">关于</a>
+    <a href="#" class="drawer-item text-h3 text-text-secondary py-3 px-4 rounded-lg hover:bg-white/5">帮助</a>
+    <button class="drawer-item btn-accent mt-6 py-3 px-6 rounded-btn text-body font-semibold items-center justify-center flex">
+      上传作品
+    </button>
+  </nav>
+</div>
+
+<!-- ========== Hero ========== -->
+<section id="hero" class="relative pt-32 pb-20 md:pt-40 md:pb-24 overflow-hidden grid-texture">
+  <div class="max-w-[1200px] mx-auto px-6">
+    <div class="hero-layout flex flex-col lg:flex-row gap-12 lg:gap-16 items-center min-h-[calc(100vh-200px)]">
+      <!-- 左侧文字 -->
+      <div class="hero-left w-full lg:w-[60%] animate-on-scroll">
+        <!-- 公告条 -->
+        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-border-subtle bg-bg-card/50 mb-8 text-caption text-text-secondary hover:border-accent/50 cursor-pointer transition-colors">
+          <span class="w-2 h-2 rounded-full bg-accent animate-pulse"></span>
+          精选摄影作品持续更新中
+        </div>
+
+        <!-- 主标题 -->
+        <h1 class="text-display font-bold leading-[1.1] tracking-[-0.02em] text-text-primary">
+          记录光影 · <span class="text-gradient-gold">发现美好</span>
+        </h1>
+
+        <!-- 副标题 -->
+        <p class="text-body text-text-secondary mt-6 max-w-lg">
+          为摄影师打造的视觉叙事空间，分享每一个值得铭记的瞬间
+        </p>
+
+        <!-- 数据指标 -->
+        <div class="hero-stats grid grid-cols-2 sm:grid-cols-4 gap-x-8 gap-y-4 mt-10">
+          <div>
+            <div class="text-stat font-bold text-accent" data-count="12800">0</div>
+            <div class="text-caption text-text-muted mt-1">作品</div>
+          </div>
+          <div>
+            <div class="text-stat font-bold text-accent" data-count="56300">0</div>
+            <div class="text-caption text-text-muted mt-1">获赞</div>
+          </div>
+          <div>
+            <div class="text-stat font-bold text-accent" data-count="3200">0</div>
+            <div class="text-caption text-text-muted mt-1">摄影师</div>
+          </div>
+          <div>
+            <div class="text-stat font-bold text-accent" data-count="180">0</div>
+            <div class="text-caption text-text-muted mt-1">标签</div>
+          </div>
+        </div>
+
+        <!-- CTA 按钮 -->
+        <div class="flex flex-wrap gap-4 mt-10">
+          <a href="#works" class="btn-accent inline-flex items-center gap-2 px-7 py-3.5 rounded-btn font-semibold text-body">
+            探索作品
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+          </a>
+          <button class="btn-outline inline-flex items-center gap-2 px-7 py-3.5 rounded-btn font-semibold text-body">
+            上传作品
+          </button>
+        </div>
+      </div>
+
+      <!-- 右侧视觉 -->
+      <div class="hero-right w-full lg:w-[40%] relative animate-on-scroll" style="transition-delay: 0.2s">
+        <!-- 后方卡片 -->
+        <div class="float-card absolute -top-4 -right-4 w-[70%] rounded-card overflow-hidden shadow-card z-0" style="transform: rotate(4deg)">
+          <img src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&h=800&fit=crop" alt="风景摄影" class="w-full h-48 object-cover" loading="lazy" />
+        </div>
+        <!-- 前方卡片 -->
+        <div class="float-card-delay relative rounded-card overflow-hidden shadow-card z-10">
+          <img src="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?w=600&h=750&fit=crop" alt="精选作品" class="w-full h-[400px] lg:h-[460px] object-cover" loading="eager" />
+          <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+          <div class="absolute bottom-0 left-0 right-0 p-5">
+            <h3 class="text-h3 font-semibold text-white">山间晨雾</h3>
+            <div class="flex items-center justify-between mt-2">
+              <span class="text-caption text-white/70">@林风</span>
+              <div class="flex items-center gap-1 text-white/70 text-caption">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                1,248
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== 精选作品 ========== -->
+<section id="works" class="py-20 lg:py-24">
+  <div class="max-w-[1200px] mx-auto px-6">
+    <!-- 区块头 -->
+    <div class="flex items-end justify-between mb-8 animate-on-scroll">
+      <div>
+        <h2 class="text-h2 font-semibold text-text-primary">精选作品</h2>
+        <p class="text-caption text-text-secondary mt-2">发现摄影师的视觉叙事</p>
+      </div>
+      <a href="#" class="text-body-sm text-accent hover:text-accent-hover transition-colors flex items-center gap-1 whitespace-nowrap">
+        查看全部
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+      </a>
+    </div>
+
+    <!-- 分类标签 -->
+    <div class="flex flex-wrap gap-2 mb-10 animate-on-scroll" style="transition-delay: 0.1s">
+      <button class="tag-chip active px-4 py-1.5 rounded-full text-caption font-medium border border-border-subtle bg-bg-card text-text-primary" data-tag="all">全部</button>
+      <button class="tag-chip px-4 py-1.5 rounded-full text-caption font-medium border border-border-subtle bg-bg-card text-text-secondary" data-tag="portrait">人像</button>
+      <button class="tag-chip px-4 py-1.5 rounded-full text-caption font-medium border border-border-subtle bg-bg-card text-text-secondary" data-tag="landscape">风景</button>
+      <button class="tag-chip px-4 py-1.5 rounded-full text-caption font-medium border border-border-subtle bg-bg-card text-text-secondary" data-tag="street">街拍</button>
+      <button class="tag-chip px-4 py-1.5 rounded-full text-caption font-medium border border-border-subtle bg-bg-card text-text-secondary" data-tag="architecture">建筑</button>
+      <button class="tag-chip px-4 py-1.5 rounded-full text-caption font-medium border border-border-subtle bg-bg-card text-text-secondary" data-tag="still">静物</button>
+    </div>
+
+    <!-- 瀑布流 -->
+    <div id="waterfall" class="waterfall animate-on-scroll" style="transition-delay: 0.2s">
+      <!-- 由 JS 生成 -->
+    </div>
+  </div>
+</section>
+
+<!-- ========== 摄影师专区 ========== -->
+<section id="photographers" class="py-20 lg:py-24 border-t border-border-subtle">
+  <div class="max-w-[1200px] mx-auto px-6">
+    <div class="mb-10 animate-on-scroll">
+      <h2 class="text-h2 font-semibold text-text-primary">热门摄影师</h2>
+      <p class="text-caption text-text-secondary mt-2">关注你喜欢的创作者</p>
+    </div>
+
+    <div id="photographerGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+      <!-- 由 JS 生成 -->
+    </div>
+  </div>
+</section>
+
+<!-- ========== Footer ========== -->
+<footer class="bg-bg-deep border-t border-border-subtle mt-10">
+  <div class="max-w-[1200px] mx-auto px-6 py-16">
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-10">
+      <div class="col-span-2 md:col-span-1">
+        <div class="flex items-center gap-2 mb-4">
+          <span class="inline-block w-2 h-2 rounded-full bg-accent"></span>
+          <span class="text-h3 font-semibold text-text-primary">影·迹</span>
+        </div>
+        <p class="text-caption text-text-muted leading-relaxed">
+          为摄影师打造的视觉叙事空间，让每一个瞬间都被铭记。
+        </p>
+      </div>
+      <div>
+        <h4 class="text-body-sm font-semibold text-text-primary mb-4">快速链接</h4>
+        <ul class="space-y-2">
+          <li><a href="#" class="text-caption text-text-muted hover:text-accent transition-colors">首页</a></li>
+          <li><a href="#" class="text-caption text-text-muted hover:text-accent transition-colors">探索</a></li>
+          <li><a href="#" class="text-caption text-text-muted hover:text-accent transition-colors">摄影师</a></li>
+          <li><a href="#" class="text-caption text-text-muted hover:text-accent transition-colors">关于</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4 class="text-body-sm font-semibold text-text-primary mb-4">作品分类</h4>
+        <ul class="space-y-2">
+          <li><a href="#" class="text-caption text-text-muted hover:text-accent transition-colors">人像</a></li>
+          <li><a href="#" class="text-caption text-text-muted hover:text-accent transition-colors">风景</a></li>
+          <li><a href="#" class="text-caption text-text-muted hover:text-accent transition-colors">街拍</a></li>
+          <li><a href="#" class="text-caption text-text-muted hover:text-accent transition-colors">建筑</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4 class="text-body-sm font-semibold text-text-primary mb-4">联系我们</h4>
+        <ul class="space-y-2">
+          <li><a href="#" class="text-caption text-text-muted hover:text-accent transition-colors">帮助中心</a></li>
+          <li><a href="#" class="text-caption text-text-muted hover:text-accent transition-colors">意见反馈</a></li>
+          <li><a href="#" class="text-caption text-text-muted hover:text-accent transition-colors">合作洽谈</a></li>
+          <li><a href="#" class="text-caption text-text-muted hover:text-accent transition-colors">隐私政策</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="mt-12 pt-8 border-t border-border-subtle flex flex-col sm:flex-row items-center justify-between gap-4">
+      <p class="text-caption text-text-muted">© 2026 影·迹 PHOTOGRAPHY. All rights reserved.</p>
+      <div class="flex items-center gap-3">
+        <a href="#" class="w-9 h-9 rounded-full flex items-center justify-center text-text-muted hover:text-accent hover:bg-white/5 transition-colors" aria-label="微博">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="4"/></svg>
+        </a>
+        <a href="#" class="w-9 h-9 rounded-full flex items-center justify-center text-text-muted hover:text-accent hover:bg-white/5 transition-colors" aria-label="Instagram">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4" fill="currentColor"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor"/></svg>
+        </a>
+        <a href="#" class="w-9 h-9 rounded-full flex items-center justify-center text-text-muted hover:text-accent hover:bg-white/5 transition-colors" aria-label="Twitter">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"/></svg>
+        </a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- ========== 悬浮按钮 ========== -->
+<div class="fixed bottom-6 right-6 z-40 flex flex-col items-center gap-3">
+  <!-- 回到顶部 -->
+  <button id="backToTop" class="back-to-top w-12 h-12 rounded-full bg-bg-card border border-border-subtle flex items-center justify-center text-text-secondary hover:text-accent hover:border-accent transition-all" aria-label="回到顶部">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg>
+  </button>
+
+  <!-- 上传 FAB -->
+  <button class="fab-rotate w-14 h-14 rounded-full btn-accent flex items-center justify-center shadow-lg shadow-accent/30" aria-label="上传作品">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+  </button>
+</div>
+
+<script>
+/*
+ * ═════════════════════════════════
+ *  影·迹 PHOTOGRAPHY 交互脚本
+ *  模块: 导航滚动 / 入场动画 / 计数动画 / 标签筛选 / 移动端菜单 / 回到顶部
+ * ═════════════════════════════════
+ */
+
+/* ─── 1. 导航双形态切换 ─── */
+const nav = document.getElementById('mainNav');
+let ticking = false;
+
+function updateNav() {
+  const scrollY = window.scrollY;
+  if (scrollY > 80) {
+    nav.classList.add('scrolled');
+  } else {
+    nav.classList.remove('scrolled');
+  }
+  ticking = false;
+}
+
+window.addEventListener('scroll', () => {
+  if (!ticking) {
+    requestAnimationFrame(updateNav);
+    ticking = true;
+  }
+});
+updateNav();
+
+/* ─── 2. 移动端菜单 ─── */
+const drawer = document.getElementById('mobileDrawer');
+const menuBtn = document.getElementById('mobileMenuBtn');
+const closeBtn = document.getElementById('mobileCloseBtn');
+
+menuBtn.addEventListener('click', () => drawer.classList.add('open'));
+closeBtn.addEventListener('click', () => drawer.classList.remove('open'));
+drawer.querySelectorAll('a').forEach(a => a.addEventListener('click', () => drawer.classList.remove('open')));
+
+/* ─── 3. 滚动入场动画 ─── */
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach((entry, i) => {
+    if (entry.isIntersecting) {
+      setTimeout(() => {
+        entry.target.classList.add('visible');
+      }, i * 80);
+      observer.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+
+document.querySelectorAll('.animate-on-scroll').forEach(el => observer.observe(el));
+
+/* ─── 4. 计数动画 ─── */
+const counters = document.querySelectorAll('[data-count]');
+const counterObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (!entry.isIntersecting) return;
+    const el = entry.target;
+    const target = parseInt(el.dataset.count);
+    const duration = 1800;
+    const start = performance.now();
+
+    function step(now) {
+      const progress = Math.min((now - start) / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      const value = Math.floor(eased * target);
+      el.textContent = value.toLocaleString() + (target >= 1000 ? '+' : '');
+      if (progress < 1) requestAnimationFrame(step);
+      else el.textContent = target.toLocaleString() + '+';
+    }
+    requestAnimationFrame(step);
+    counterObserver.unobserve(el);
+  });
+}, { threshold: 0.5 });
+
+counters.forEach(c => counterObserver.observe(c));
+
+/* ─── 5. 精选作品数据 ─── */
+const works = [
+  { id: 1, title: '山间晨雾', author: '林风', likes: 1248, tag: 'landscape', h: 420, img: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&h=800&fit=crop' },
+  { id: 2, title: '城市夜色', author: '云溪', likes: 892, tag: 'street', h: 320, img: 'https://images.unsplash.com/photo-1480714378408-67cf0d13bc1b?w=600&h=500&fit=crop' },
+  { id: 3, title: '人像光影', author: '山野', likes: 2341, tag: 'portrait', h: 480, img: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=600&h=900&fit=crop' },
+  { id: 4, title: '海岸晚霞', author: '星辰', likes: 1678, tag: 'landscape', h: 380, img: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=600&h=700&fit=crop' },
+  { id: 5, title: '街角故事', author: '林梓颖', likes: 634, tag: 'street', h: 300, img: 'https://images.unsplash.com/photo-1519501025264-65ba15a82390?w=600&h=450&fit=crop' },
+  { id: 6, title: '建筑几何', author: '林风', likes: 987, tag: 'architecture', h: 440, img: 'https://images.unsplash.com/photo-1486325212027-8081e485255e?w=600&h=850&fit=crop' },
+  { id: 7, title: '静物美学', author: '云溪', likes: 456, tag: 'still', h: 360, img: 'https://images.unsplash.com/photo-1495562569060-2eec283d3391?w=600&h=650&fit=crop' },
+  { id: 8, title: '人像侧影', author: '山野', likes: 1890, tag: 'portrait', h: 500, img: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=600&h=950&fit=crop' },
+  { id: 9, title: '冬日森林', author: '星辰', likes: 723, tag: 'landscape', h: 340, img: 'https://images.unsplash.com/photo-1448375240586-882707db888b?w=600&h=600&fit=crop' },
+];
+
+const waterfall = document.getElementById('waterfall');
+
+function renderWorks(tag = 'all') {
+  const filtered = tag === 'all' ? works : works.filter(w => w.tag === tag);
+  waterfall.innerHTML = filtered.map((w, i) => `
+    <div class="work-card animate-on-scroll" style="animation-delay: ${i * 60}ms">
+      <div class="work-img relative bg-bg-card" style="aspect-ratio: 600/${w.h}">
+        <div class="img-placeholder absolute inset-0"></div>
+        <img
+          src="${w.img}"
+          alt="${w.title}"
+          loading="lazy"
+          width="600"
+          height="${w.h}"
+          class="relative z-10"
+          onload="this.previousElementSibling.style.display='none'"
+        />
+      </div>
+      <div class="work-overlay absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent p-4">
+        <h3 class="text-body-sm font-semibold text-white">${w.title}</h3>
+        <div class="flex items-center justify-between mt-1">
+          <span class="text-caption text-white/70">@${w.author}</span>
+          <div class="flex items-center gap-1 text-white/70 text-caption">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+            ${w.likes.toLocaleString()}
+          </div>
+        </div>
+      </div>
+    </div>
+  `).join('');
+
+  // 重新观察新元素
+  waterfall.querySelectorAll('.animate-on-scroll').forEach(el => observer.observe(el));
+}
+renderWorks();
+
+/* ─── 6. 标签筛选 ─── */
+document.querySelectorAll('.tag-chip').forEach(chip => {
+  chip.addEventListener('click', () => {
+    document.querySelectorAll('.tag-chip').forEach(c => {
+      c.classList.remove('active');
+      c.classList.add('text-text-secondary');
+      c.classList.remove('text-text-primary');
+    });
+    chip.classList.add('active');
+    chip.classList.remove('text-text-secondary');
+    chip.classList.add('text-text-primary');
+    renderWorks(chip.dataset.tag);
+  });
+});
+
+/* ─── 7. 摄影师数据 ─── */
+const photographers = [
+  { name: '林风', bio: '风光/旅行摄影师', works: 128, followers: '3.2k', avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=200&h=200&fit=crop' },
+  { name: '云溪', bio: '城市/街拍爱好者', works: 96, followers: '1.8k', avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200&h=200&fit=crop' },
+  { name: '山野', bio: '人像/艺术摄影', works: 210, followers: '5.6k', avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&h=200&fit=crop' },
+  { name: '星辰', bio: '星空/长曝光', works: 67, followers: '2.1k', avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop' },
+];
+
+const photoGrid = document.getElementById('photographerGrid');
+photoGrid.innerHTML = photographers.map((p, i) => `
+  <div class="photographer-card bg-bg-card rounded-card p-6 animate-on-scroll" style="transition-delay: ${i * 100}ms">
+    <div class="avatar-ring w-20 h-20 rounded-full border-2 border-transparent transition-colors p-0.5 mx-auto">
+      <img src="${p.avatar}" alt="${p.name}" class="w-full h-full rounded-full object-cover" loading="lazy" width="80" height="80" />
+    </div>
+    <h3 class="text-h3 font-semibold text-text-primary text-center mt-4">${p.name}</h3>
+    <p class="text-caption text-text-muted text-center mt-1">${p.bio}</p>
+    <div class="flex justify-center gap-6 mt-4 text-caption text-text-secondary">
+      <span><span class="text-accent font-semibold">${p.works}</span> 作品</span>
+      <span><span class="text-accent font-semibold">${p.followers}</span> 粉丝</span>
+    </div>
+    <button class="btn-follow w-full mt-5 py-2 rounded-btn text-body-sm font-medium bg-transparent text-text-secondary" onclick="toggleFollow(this)">
+      关注
+    </button>
+  </div>
+`).join('');
+photoGrid.querySelectorAll('.animate-on-scroll').forEach(el => observer.observe(el));
+
+function toggleFollow(btn) {
+  if (btn.classList.contains('followed')) {
+    btn.classList.remove('followed');
+    btn.textContent = '关注';
+  } else {
+    btn.classList.add('followed');
+    btn.textContent = '已关注';
+  }
+}
+window.toggleFollow = toggleFollow;
+
+/* ─── 8. 回到顶部 ─── */
+const backToTop = document.getElementById('backToTop');
+window.addEventListener('scroll', () => {
+  if (window.scrollY > 500) backToTop.classList.add('visible');
+  else backToTop.classList.remove('visible');
+});
+backToTop.addEventListener('click', () => {
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+});
+</script>
+
+</body>
+</html>

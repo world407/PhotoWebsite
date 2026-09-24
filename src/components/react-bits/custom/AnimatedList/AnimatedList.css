@@ -1,0 +1,46 @@
+/* AnimatedList — 自主实现，非 React Bits 源码组件（接口对齐 React Bits AnimatedList 用法） */
+
+.animated-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.animated-list--no-scrollbar {
+  scrollbar-width: none;
+}
+.animated-list--no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.animated-list__item {
+  position: relative;
+  border-radius: var(--radius-img);
+}
+
+/* showGradients：极弱金色光泽（暗调摄影站，强度压低；仅 hover/聚焦时微亮） */
+.animated-list__item--gradient::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(
+    240px circle at 50% 0%,
+    color-mix(in srgb, var(--color-accent) 7%, transparent),
+    transparent 70%
+  );
+  opacity: 0;
+  transition: opacity 180ms var(--ease-out);
+  pointer-events: none;
+  z-index: 0;
+}
+.animated-list__item--gradient:hover::before,
+.animated-list__item--gradient:focus-within::before {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animated-list__item--gradient::before {
+    transition: none;
+  }
+}

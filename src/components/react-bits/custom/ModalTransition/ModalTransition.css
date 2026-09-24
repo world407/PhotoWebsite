@@ -1,0 +1,40 @@
+/* ModalTransition — 自主实现，非 React Bits 源码组件（对标 Magic Transform：弹窗整体平滑入场） */
+
+.modal-transition-root {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-modal-backdrop);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+.modal-transition-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(11, 11, 16, 0.72);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.modal-transition-panel {
+  position: relative;
+  z-index: var(--z-modal);
+  width: 100%;
+  max-height: calc(100vh - 32px);
+  overflow-y: auto;
+  background: var(--color-bg-card);
+  border: 0.5px solid var(--color-glass-border);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-modal);
+  -webkit-overflow-scrolling: touch;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .modal-transition-backdrop,
+  .modal-transition-panel {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+}

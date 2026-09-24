@@ -1,0 +1,8 @@
+# 影·迹 PHOTOGRAPHY - robots.txt
+# 允许所有搜索引擎抓取主要页面
+
+User-agent: *
+Allow: /
+
+# Sitemap 待正式域名确定后补充，例如：
+# Sitemap: https://your-domain.com/sitemap.xml

@@ -1,0 +1,109 @@
+/* MobileDrawer — StaggeredMenu 风格移动端抽屉（类名统一 mobile-menu-* 前缀） */
+
+/* 关闭态：不可见且不可交互（配合 inert 属性） */
+.mobile-menu-root {
+  visibility: hidden;
+  pointer-events: none;
+}
+.mobile-menu-root.is-open {
+  visibility: visible;
+}
+
+/* 预滑层：面板滑入前先行的色块，制造层次 */
+.mobile-menu-prelayers {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: min(100%, 26rem);
+  z-index: 5;
+  pointer-events: none;
+}
+
+.mobile-menu-prelayer {
+  position: absolute;
+  inset: 0;
+  will-change: transform;
+}
+.mobile-menu-prelayer:nth-child(1) {
+  background: var(--color-bg-deep);
+}
+.mobile-menu-prelayer:nth-child(2) {
+  background: color-mix(in srgb, var(--color-accent) 16%, var(--color-bg-deep));
+}
+
+/* 面板主体：玻璃拟态 + 金色细边框 */
+.mobile-menu-panel {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: min(100%, 26rem);
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  padding: 1.5rem;
+  overflow-y: auto;
+  pointer-events: auto;
+  background: var(--color-glass-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-left: 0.5px solid var(--color-glass-border);
+  will-change: transform;
+}
+
+/* 关闭按钮：0.5px 玻璃边框 */
+.mobile-menu-close {
+  border: 0.5px solid var(--color-glass-border);
+  color: var(--color-text-primary);
+}
+.mobile-menu-close:hover {
+  color: var(--color-accent);
+  border-color: color-mix(in srgb, var(--color-accent) 55%, var(--color-glass-border));
+}
+
+/* 菜单列表：overflow hidden 包裹层 + 内部 label 位移实现逐条滑入 */
+.mobile-menu-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.mobile-menu-item-wrap {
+  overflow: hidden;
+  line-height: 1.2;
+}
+
+.mobile-menu-item-label {
+  display: inline-block;
+  will-change: transform;
+  transform-origin: 50% 100%;
+}
+
+/* 菜单文字：主文本色，hover/active 金色（提高特异性覆盖 NavLink 默认色） */
+.mobile-menu-panel .mobile-menu-item {
+  color: var(--color-text-primary);
+}
+.mobile-menu-panel .mobile-menu-item:hover,
+.mobile-menu-panel .mobile-menu-item:focus-visible,
+.mobile-menu-panel .mobile-menu-item.active {
+  color: var(--color-accent);
+}
+
+/* 底部上传按钮 */
+.mobile-menu-cta {
+  margin-top: 1.5rem;
+  will-change: transform;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mobile-menu-prelayer,
+  .mobile-menu-panel,
+  .mobile-menu-item-label,
+  .mobile-menu-cta {
+    will-change: auto;
+  }
+}

@@ -1,0 +1,29 @@
+/* DropzoneGlow — 自主实现，非 React Bits 源码组件（对标 Hover Preview：投放区拖拽反馈） */
+
+.dropzone-glow {
+  position: relative;
+  border: 2px dashed var(--color-glass-border);
+  border-radius: var(--radius-card);
+  background: color-mix(in srgb, var(--color-bg-card) 40%, transparent);
+  transition:
+    border-color 180ms var(--ease-out),
+    background-color 180ms var(--ease-out);
+  cursor: pointer;
+}
+
+.dropzone-glow:hover {
+  border-color: color-mix(in srgb, var(--color-accent) 45%, transparent);
+}
+
+.dropzone-glow.is-dragover,
+.dropzone-glow[data-dragover='true'] {
+  border-color: var(--color-accent);
+  background: color-mix(in srgb, var(--color-accent) 5%, var(--color-bg-card));
+}
+
+/* 键盘聚焦可见性 */
+.dropzone-glow:focus-visible {
+  outline: none;
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--color-accent) 50%, transparent);
+}
