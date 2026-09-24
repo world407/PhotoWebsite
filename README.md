@@ -1,5 +1,7 @@
 # 影·迹 PHOTOGRAPHY
 
+[![CI](https://github.com/world407/PhotoWebsite/actions/workflows/ci.yml/badge.svg)](https://github.com/world407/PhotoWebsite/actions/workflows/ci.yml)
+
 高级个人摄影作品集网站，从 prototype.html 工程化而来。
 
 ## 技术栈
