@@ -48,6 +48,11 @@ export function Gallery() {
   const setSearch = useCallback((q: string) => updateParam('q', q, ''), [updateParam]);
   const setFeatured = useCallback((f: boolean) => updateParam('featured', f ? '1' : '0', '0'), [updateParam]);
 
+  // 单次导航重置全部筛选，避免同一事件内多次 setSearchParams 函数式更新相互覆盖
+  const clearAllFilters = useCallback(() => {
+    setSearchParams({}, { replace: true });
+  }, [setSearchParams]);
+
   // Filter and sort works
   const filteredWorks = useMemo(() => {
     let result = [...works];
@@ -171,11 +176,7 @@ export function Gallery() {
           <div className="py-20 text-center">
             <p className="text-body text-text-secondary">没有找到匹配的作品</p>
             <button
-              onClick={() => {
-                setTag('all');
-                setSearch('');
-                setFeatured(false);
-              }}
+              onClick={clearAllFilters}
               className="mt-4 text-accent hover:text-accent-hover text-body-sm"
             >
               清除筛选条件
