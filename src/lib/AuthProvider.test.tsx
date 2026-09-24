@@ -26,6 +26,30 @@ describe('AuthProvider', () => {
     spy.mockRestore();
   });
 
+  it('账号数据损坏（非法 JSON）时降级为空账号表，不崩溃且可重新注册', async () => {
+    localStorage.setItem('photo_users', '{这不是合法 JSON');
+    const { result } = renderHook(() => useAuth(), { wrapper: withAuth });
+    await waitFor(() => expect(result.current.ready).toBe(true));
+    expect(result.current.user).toBeNull();
+
+    await act(async () => {
+      await result.current.register('reborn', 'secret123', '重生用户');
+    });
+    expect(result.current.user?.username).toBe('reborn');
+    const accounts = JSON.parse(localStorage.getItem('photo_users') ?? '[]');
+    expect(accounts).toHaveLength(1);
+  });
+
+  it('会话 id 损坏（非数字/越界）时按未登录处理', async () => {
+    localStorage.setItem('photo_users', JSON.stringify([
+      { id: 1000, username: 'owner', password: 'secret123', displayName: '主人', bio: '', avatarId: null },
+    ]));
+    localStorage.setItem('photo_session', 'not-a-number');
+    const { result } = renderHook(() => useAuth(), { wrapper: withAuth });
+    await waitFor(() => expect(result.current.ready).toBe(true));
+    expect(result.current.user).toBeNull();
+  });
+
   it('register 成功：user 就位、id 从 1000 起、会话与账号持久化', async () => {
     const { result } = renderHook(() => useAuth(), { wrapper: withAuth });
 

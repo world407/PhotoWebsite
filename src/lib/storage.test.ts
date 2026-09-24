@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, afterEach, vi } from 'vitest';
 import {
   idbGet,
   idbGetAll,
@@ -47,5 +47,24 @@ describe('storage（IndexedDB 封装，fake-indexeddb）', () => {
   it('两个 store 互相隔离', async () => {
     await idbPut(STORE_IMAGES, { id: 7, name: 'image-store' } satisfies SampleRecord);
     expect(await idbGet(STORE_AVATARS, 7)).toBeUndefined();
+  });
+});
+
+describe('storage 降级（IndexedDB 不可用，如隐私模式）', () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+    vi.resetModules();
+  });
+
+  it('indexedDB 缺失：探测为 false，读返回空数组，写以明确错误拒绝', async () => {
+    vi.resetModules();
+    vi.stubGlobal('indexedDB', undefined);
+    const mod = await import('./storage');
+
+    await expect(mod.idbIsAvailable()).resolves.toBe(false);
+    await expect(mod.idbGetAll(mod.STORE_IMAGES)).resolves.toEqual([]);
+    await expect(mod.idbPut(mod.STORE_IMAGES, { id: -9 })).rejects.toThrow(
+      'IndexedDB unavailable',
+    );
   });
 });
