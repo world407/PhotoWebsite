@@ -20,6 +20,10 @@ dist_locked
 # 临时验证截图
 verify-render.png
 
+# Playwright 产物
+playwright-report
+test-results
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
