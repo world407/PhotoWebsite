@@ -16,7 +16,8 @@
     --color-accent-hover: #e0b866;
     --color-text-primary: #f5f5f7;
     --color-text-secondary: #a0a0b0;
-    --color-text-muted: #6b6b7b;
+    /* WCAG AA：在 #0a0a0f/#16161d 等背景上对比度 ≥4.5:1（实测 5.3-5.8） */
+    --color-text-muted: #8a8a9a;
     --color-border-subtle: rgba(255, 255, 255, 0.08);
     --color-gold-glow: rgba(212, 168, 83, 0.4);
     --color-nav-scrolled: rgba(22, 22, 29, 0.72);

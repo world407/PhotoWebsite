@@ -44,15 +44,6 @@ export function WorkCard({ work, index, onClick, showAuthor = true }: WorkCardPr
     onClick?.();
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    // Only handle keyboard when the card itself is focused, not its inner buttons
-    if (e.target !== e.currentTarget) return;
-    if (e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault();
-      onClick?.();
-    }
-  };
-
   const handleToggleFavorite = (e: React.MouseEvent) => {
     e.stopPropagation();
     toggleFavorite(work.id);
@@ -61,13 +52,8 @@ export function WorkCard({ work, index, onClick, showAuthor = true }: WorkCardPr
   return (
     <div
       ref={ref}
-      role="button"
-      tabIndex={0}
-      aria-label={`查看作品：${work.title}`}
-      className={`work-card cursor-pointer animate-on-scroll focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 rounded-lg ${isVisible ? 'visible' : ''}`}
+      className={`work-card cursor-pointer animate-on-scroll rounded-lg ${isVisible ? 'visible' : ''}`}
       style={{ transitionDelay: `${Math.min(index * 40, 400)}ms` }}
-      onClick={handleClick}
-      onKeyDown={handleKeyDown}
     >
       <div
         className="work-img relative bg-bg-card overflow-hidden rounded-lg"
@@ -97,7 +83,15 @@ export function WorkCard({ work, index, onClick, showAuthor = true }: WorkCardPr
           className={`w-full h-full object-cover ${loaded ? 'opacity-100' : 'opacity-0'}`}
           onLoad={() => setLoaded(true)}
         />
-        
+
+        {/* 整图主操作覆盖层：与收藏按钮为兄弟节点，避免 button 嵌套；透明、键盘可聚焦 */}
+        <button
+          type="button"
+          aria-label={`查看作品：${work.title}`}
+          onClick={handleClick}
+          className="absolute inset-0 z-[5] rounded-lg cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50"
+        />
+
         {/* Hover overlay */}
         <div className="work-overlay absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent opacity-0 transition-opacity duration-300 pointer-events-none">
           <div className="absolute bottom-0 left-0 right-0 p-4 transform translate-y-2 transition-transform duration-300">
@@ -112,7 +106,7 @@ export function WorkCard({ work, index, onClick, showAuthor = true }: WorkCardPr
         </div>
         
         {/* Top stats (always visible on hover) */}
-        <div className="absolute top-3 right-3 flex items-center gap-2 opacity-0 transition-opacity duration-300 z-10">
+        <div className="absolute top-3 right-3 flex items-center gap-2 opacity-0 transition-opacity duration-300 z-10 pointer-events-none">
           <span className="flex items-center gap-1 bg-black/40 backdrop-blur-sm text-white text-caption px-2 py-1 rounded-full">
             <Icon name="heart" size={12} />
             {work.likes.toLocaleString()}
