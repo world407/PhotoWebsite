@@ -10,7 +10,15 @@ lerna-debug.log*
 node_modules
 dist
 dist-ssr
+dist_locked
 *.local
+
+# AI 工具/IDE 私有目录
+.trae
+.workbuddy
+
+# 临时验证截图
+verify-render.png
 
 # Editor directories and files
 .vscode/*
