@@ -13,8 +13,8 @@
 | Phase 1: 基础架构 | ✅ **COMPLETE** | 100% |
 | Phase 2: Home 首页 | ✅ **COMPLETE** | 100% |
 | Phase 3: Gallery 摄影作品库 | ✅ **COMPLETE** | 100% |
-| Phase 4: Photo Detail | ⏳ NOT STARTED | 0% |
-| Phase 5: 其他页面 | ⏳ NOT STARTED | 0% |
+| Phase 4: Photo Detail | ✅ **COMPLETE**（2026-09-26 核对） | 100% |
+| Phase 5: 其他页面 | 🔍 页面均已存在，完成度待审计 | — |
 
 ---
 
@@ -213,31 +213,39 @@
 
 ---
 
-## Phase 4: Photo Detail ⏳ NOT STARTED
+## Phase 4: Photo Detail ✅ COMPLETE（2026-09-26 核对）
 
-**状态**：路由已配置（`/photo/:id`），页面文件存在但仅为占位文本。
+**状态**：P0/P1 全部落地，P2 收尾（标签/地点联动）已补齐，E2E 覆盖键盘/手势/错误路径/a11y/联动跳转。
 
-**预期功能**（根据产品逻辑推导）：
-- 照片大图展示
-- 完整 EXIF 信息
-- 拍摄地点、日期、描述
-- 摄影师信息
-- 点赞/收藏/分享
-- 相关作品推荐
-- 上一张/下一张导航
+**交付物**（实际代码）：
+- `src/pages/PhotoDetail.tsx` - 详情页（键盘 ←→/Esc/f、手势滑动、相邻预加载、404 降级）
+- `src/components/organisms/PhotoHero.tsx` - 主图（Shimmer + 点击 Lightbox）
+- `src/components/organisms/RippleDistortion.tsx` - WebGL 涟漪首图（失败自动降级原图）
+- `src/components/organisms/RelatedWorks.tsx` - 相关作品推荐
+- `src/components/molecules/PhotoInfo.tsx` - 标题/地点/日期/描述/标签（标签与地点可点击联动 Gallery）
+- `src/components/molecules/PhotoActions.tsx` - 点赞/收藏/真实下载/复制链接分享/全屏（含手机底部固定栏变体）
+- `src/components/molecules/ExifPanel.tsx` - EXIF 面板（无字段时整块隐藏）
+- `src/components/molecules/PhotographerMini.tsx` - 摄影师迷你卡
+- `src/components/molecules/PhotoNavigation.tsx` - 上一张/下一张
+- `src/components/atoms/DetailBreadcrumb.tsx` - 面包屑
+
+**Gallery 联动参数**：`tag`（分类枚举）、`q`（全文，标签点击走此参数）、`location`（精确地点，地点点击走此参数，带可清除金色胶囊）、`sort`、`layout`、`featured`
 
 ---
 
-## Phase 5: 其他页面 ⏳ NOT STARTED
+## Phase 5: 其他页面 🔍 页面均已存在，完成度待审计（2026-09-26）
 
-| 页面 | 路由 | 状态 |
+| 页面 | 路由 | 代码状态 |
 |------|------|------|
-| About 关于 | `/about` | 占位文本 |
-| Projects 摄影专题 | `/projects` | 占位文本 |
-| Journal 摄影日志 | `/journal` | 占位文本 |
-| Contact 联系 | `/contact` | 占位文本 |
-| Favorites 收藏夹 | `/favorites` | 导航有链接，页面未创建 |
-| Photographers 摄影师列表 | `/photographers` | 导航有链接，页面未创建 |
+| About 关于 | `/about` | 页面已存在（约 78 行），完成度待审计 |
+| Projects 摄影专题 | `/projects` | 页面已存在（约 102 行），完成度待审计 |
+| Journal 摄影日志 | `/journal` | 页面已存在（约 75 行），完成度待审计 |
+| Contact 联系 | `/contact` | 页面已存在（约 95 行），完成度待审计 |
+| Favorites 收藏夹 | `/favorites` | 页面已存在（约 74 行），完成度待审计 |
+| Photographers 摄影师列表 | `/photographers` | 页面已存在（约 38 行），疑似半成品，优先审计 |
+| 上传作品（计划外） | `/upload` | 已实现：本地账号、IDB 存储、图片处理、错误提示 |
+| 个人主页（计划外） | `/profile` | 已实现（约 202 行） |
+| 帮助（计划外） | `/help` | 已存在（约 86 行） |
 
 ---
 
@@ -247,10 +255,8 @@
 ✅ Phase 1 COMPLETE
 ✅ Phase 2 COMPLETE
 ✅ Phase 3 COMPLETE
+✅ Phase 4 COMPLETE（2026-09-26 核对）
 
-**项目已达到封档标准，可以从 Phase 4 继续开发。**
+**下一步：审计 Phase 5 各页面完成度（优先 Photographers）。**
 
-**封档时构建状态**：
-- TypeScript: 0 错误
-- 构建产物大小: CSS 27.74KB (gzip 6.41KB), JS 215.08KB (gzip 67.84KB)
-- 构建时间: ~2.2s
+**2026-09-26 测试基线**：Vitest 56 例 / Playwright 43 例全绿，lint 零警告，build 零错误。

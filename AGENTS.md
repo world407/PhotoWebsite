@@ -2,7 +2,7 @@
 
 ⚠️ **所有 AI Agent 在开始开发前必须阅读此文件。**
 
-**封档状态**：Phase 0-3 COMPLETE | 下一阶段：Phase 4 - Photo Detail
+**封档状态**：Phase 0-4 COMPLETE（2026-09-26 核对） | 下一阶段：Phase 5 页面完成度审计与补齐（About/Projects/Journal/Contact/Favorites/Photographers 页面均已存在，待审计完成度）
 
 ---
 
@@ -220,27 +220,25 @@
 
 ---
 
-## 第九条：Phase 4 快速参考
+## 第九条：Phase 4 完成状态（Photo Detail 已封档）
 
-**当前任务**：Phase 4 - Photo Detail 照片详情页
+**状态**：Phase 4 - Photo Detail 照片详情页已完成（2026-09-26 核对）
 
-详细计划：`docs/PHASE_4_PLAN.md`
+原计划：`docs/PHASE_4_PLAN.md`（P0/P1 全部落地，P2 标签/地点联动已补齐）
 
-核心功能：
-- `/photo/:id` 页面
-- 大图展示
-- EXIF 信息面板
-- 摄影师信息卡片
-- 点赞/收藏/分享
-- 上一张/下一张导航
-- 相关作品推荐
-- 键盘快捷键
+已实现：
+- `/photo/:id` 页面：PhotoHero 大图（含 WebGL 涟漪）、PhotoInfo、ExifPanel、PhotographerMini、RelatedWorks、PhotoNavigation、DetailBreadcrumb
+- 点赞/收藏/真实下载/复制链接分享（PhotoActions，非纯 UI）
+- 上一张/下一张：按钮 + ←→ 键 + 手机滑动；相邻图预加载；Esc 返回（history 语义）、f 全屏
+- 点击主图打开 Lightbox；返回 Gallery 恢复滚动位置
+- 标签点击 → `/gallery?q=标签`；地点点击 → `/gallery?location=精确地点`（Gallery 有可关闭金色胶囊）
+- 不存在 ID 渲染 NotFound；EXIF 全缺时面板不渲染
+- 测试：详情页相关 E2E 覆盖键盘/滑动/错误路径/a11y/标签地点联动
 
-不要做：
+仍不要做：
 - 不要重做 Gallery 或首页
 - 不要引入后端
 - 不要做评论系统
-- 不要做用户系统
 
 ---
 
