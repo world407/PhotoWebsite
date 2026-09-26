@@ -2,6 +2,7 @@ import { useState, useMemo, useCallback, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { WorkCard } from '@/components/molecules/WorkCard';
 import { GalleryToolbar } from '@/components/molecules/GalleryToolbar';
+import { Icon } from '@/components/atoms/Icon';
 import { useWorks } from '@/lib/works';
 import { saveScrollPosition, restoreScrollPosition } from '@/lib/hooks';
 import type { WorkTag, SortOption, LayoutMode } from '@/types';
@@ -30,6 +31,7 @@ export function Gallery() {
   const sortBy: SortOption = isSortOption(searchParams.get('sort')) ? (searchParams.get('sort') as SortOption) : 'latest';
   const layoutMode: LayoutMode = isLayoutMode(searchParams.get('layout')) ? (searchParams.get('layout') as LayoutMode) : 'masonry';
   const searchQuery = searchParams.get('q') ?? '';
+  const locationFilter = searchParams.get('location') ?? '';
   const showFeaturedOnly = searchParams.get('featured') === '1';
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
 
@@ -46,6 +48,7 @@ export function Gallery() {
   const setSort = useCallback((sort: SortOption) => updateParam('sort', sort, 'latest'), [updateParam]);
   const setLayout = useCallback((mode: LayoutMode) => updateParam('layout', mode, 'masonry'), [updateParam]);
   const setSearch = useCallback((q: string) => updateParam('q', q, ''), [updateParam]);
+  const setLocation = useCallback((loc: string) => updateParam('location', loc, ''), [updateParam]);
   const setFeatured = useCallback((f: boolean) => updateParam('featured', f ? '1' : '0', '0'), [updateParam]);
 
   // 单次导航重置全部筛选，避免同一事件内多次 setSearchParams 函数式更新相互覆盖
@@ -60,6 +63,11 @@ export function Gallery() {
     // Filter by tag
     if (activeTag !== 'all') {
       result = result.filter(w => w.tag === activeTag);
+    }
+
+    // Filter by exact shooting location（来自详情页地点链接）
+    if (locationFilter) {
+      result = result.filter(w => w.location === locationFilter);
     }
 
     // Filter by featured
@@ -96,12 +104,12 @@ export function Gallery() {
     }
 
     return result;
-  }, [works, activeTag, sortBy, searchQuery, showFeaturedOnly]);
+  }, [works, activeTag, locationFilter, sortBy, searchQuery, showFeaturedOnly]);
 
   // Reset pagination whenever filter/sort/search changes
   useEffect(() => {
     setVisibleCount(PAGE_SIZE);
-  }, [activeTag, sortBy, searchQuery, showFeaturedOnly]);
+  }, [activeTag, locationFilter, sortBy, searchQuery, showFeaturedOnly]);
 
   const visibleWorks = useMemo(() => filteredWorks.slice(0, visibleCount), [filteredWorks, visibleCount]);
   const hasMore = visibleCount < filteredWorks.length;
@@ -128,8 +136,8 @@ export function Gallery() {
           <p className="text-body text-text-secondary mt-2">发现精彩的摄影作品</p>
         </div>
 
-        {/* Featured toggle */}
-        <div className="flex items-center gap-3 mb-6">
+        {/* Featured toggle + active location filter */}
+        <div className="flex flex-wrap items-center gap-3 mb-6">
           <button
             onClick={() => setFeatured(!showFeaturedOnly)}
             className={`flex items-center gap-2 px-4 py-2 rounded-full text-body-sm transition-all ${
@@ -141,6 +149,18 @@ export function Gallery() {
             <span className="w-2 h-2 rounded-full bg-current" />
             精选作品
           </button>
+          {locationFilter && (
+            <button
+              type="button"
+              onClick={() => setLocation('')}
+              aria-label={`清除地点筛选：${locationFilter}`}
+              className="flex items-center gap-1.5 px-4 py-2 rounded-full text-body-sm bg-accent text-bg-deep transition-transform hover:scale-[1.02] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50"
+            >
+              <Icon name="map-pin" size={13} />
+              {locationFilter}
+              <Icon name="x" size={13} />
+            </button>
+          )}
         </div>
 
         {/* Toolbar */}
@@ -159,7 +179,7 @@ export function Gallery() {
         {/* Works grid */}
         {filteredWorks.length > 0 ? (
           <div
-            key={`${activeTag}-${sortBy}-${layoutMode}-${showFeaturedOnly}`}
+            key={`${activeTag}-${locationFilter}-${sortBy}-${layoutMode}-${showFeaturedOnly}`}
             className={layoutMode === 'masonry' ? 'waterfall' : 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5'}
           >
             {visibleWorks.map((work, index) => (

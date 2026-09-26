@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Icon } from '@/components/atoms/Icon';
 import { TagChip } from '@/components/atoms/TagChip';
 import type { Work } from '@/types';
@@ -8,8 +9,23 @@ interface PhotoInfoProps {
 }
 
 export function PhotoInfo({ work }: PhotoInfoProps) {
+  const navigate = useNavigate();
   const [expanded, setExpanded] = useState(false);
   const hasDescription = !!work.description && work.description.length > 0;
+
+  // 自由标签走全文搜索（搜索框可见、可清除）
+  const handleTagClick = useCallback(
+    (tag: string) => {
+      navigate(`/gallery?q=${encodeURIComponent(tag)}`);
+    },
+    [navigate],
+  );
+
+  // 地点走精确匹配，展示该拍摄地的全部作品
+  const handleLocationClick = useCallback(() => {
+    if (!work.location) return;
+    navigate(`/gallery?location=${encodeURIComponent(work.location)}`);
+  }, [navigate, work.location]);
 
   const formatDate = (dateString?: string) => {
     if (!dateString) return null;
@@ -36,10 +52,15 @@ export function PhotoInfo({ work }: PhotoInfoProps) {
         {(work.location || formattedDate) && (
           <div className="flex flex-wrap items-center gap-4 text-text-secondary text-body-sm">
             {work.location && (
-              <span className="inline-flex items-center gap-1.5">
+              <button
+                type="button"
+                onClick={handleLocationClick}
+                aria-label={`查看拍摄地 ${work.location} 的作品`}
+                className="inline-flex items-center gap-1.5 transition-colors hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 rounded-sm"
+              >
                 <Icon name="map-pin" size={14} />
                 {work.location}
-              </span>
+              </button>
             )}
             {formattedDate && (
               <span className="inline-flex items-center gap-1.5">
@@ -74,7 +95,7 @@ export function PhotoInfo({ work }: PhotoInfoProps) {
       {work.tags && work.tags.length > 0 && (
         <div className="flex flex-wrap gap-2" aria-label="标签">
           {work.tags.map((tag) => (
-            <TagChip key={tag} label={tag} interactive={false} />
+            <TagChip key={tag} label={tag} onClick={() => handleTagClick(tag)} />
           ))}
         </div>
       )}
