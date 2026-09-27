@@ -244,7 +244,7 @@
 | Journal 摄影日志 | `/journal` | 6 篇手记列表，每篇"相关作品"跳 `/gallery?tag=`；**无日志详情页（列表页设计，P2）** |
 | Contact 联系 | `/contact` | 合作方式 + 真实 mailto/帮助/作品库链接；无表单（与无后端约束一致） |
 | Favorites 收藏夹 | `/favorites` | 接 `useFavorites` 持久数据 + WorkCard 网格 + 空状态 + 滚动恢复 |
-| Photographers 摄影师 | `/photographers` | 5 张卡（真实数据）+ OrbitImages 动画；卡片**不可点进摄影师主页（路由不存在，P2）** |
+| Photographers 摄影师 | `/photographers` | 5 张卡（真实数据）+ OrbitImages 动画；整卡可进 `/photographers/:id` 摄影师主页 |
 | 上传作品（计划外） | `/upload` | 已实现：本地账号、IDB 存储、图片处理、错误提示 |
 | 个人主页（计划外） | `/profile` | 已实现（约 202 行） |
 | 帮助（计划外） | `/help` | 已存在（约 86 行） |
@@ -261,9 +261,14 @@
 - ✅ **图片 onError 降级**：新增 `atoms/SmartImage`——作品图失败展示深色占位（图标+「图片加载失败」），头像失败展示首字圆形占位，src 切换自动重置；已接入 WorkCard（主图/作者头像）、Projects 封面、HeroSection、Lightbox（主图/头像）、PhotoHero、PhotographerCard、PhotographerMini、OrbitImages、Stack
 - 测试：单测 56→65（FollowsProvider 4 例、SmartImage 5 例）；E2E 57→58（关注刷新持久化+列表/详情跨页同步、封面 abort 降级）
 
+### 摄影师主页落地（2026-09-27）
+
+- ✅ 新增 `/photographers/:id`：PhotographerHeader（头像环/简介/真实统计：实际作品数·粉丝·作品集总获赞/关注按钮接 FollowsProvider）+ 面包屑（首页/摄影师/姓名）+ 该作者真实作品集网格（WorkCard 复用，点击进详情并存滚动位置）；非法或不存在 id 渲染 NotFound
+- 入口：PhotographerCard 整卡 overlay Link（首页与列表页两处复用卡同时生效），照片详情 PhotographerMini 姓名链接（本地用户作品作者无 id 不链接）
+- 测试：新增 `e2e/photographer-detail.spec.ts` 4 例（列表进入+零裂图零报错、关注跨页同步+刷新持久化、作品集↔详情互通、数字/非法 id 404），axe 扫描 11→12 页
+
 ### 遗留 P2 缺口（审计记录，未在本轮修复）
 
-- `/photographers/:id` 摄影师主页不存在，摄影师卡整卡不可点
 - Journal 无 `/journal/:id` 详情页，文章仅摘要列表
 
 ---
@@ -277,6 +282,6 @@
 ✅ Phase 4 COMPLETE（2026-09-26 核对）
 ✅ Phase 5 六页审计通过并修复缺陷（2026-09-27）
 
-**可选后续：摄影师主页 `/photographers/:id`、日志详情 `/journal/:id`。**
+**可选后续：日志详情 `/journal/:id`。**
 
-**2026-09-27 测试基线**：Vitest 65 例 / Playwright 58 例全绿，lint 零警告，build 零错误，axe 扫描 11 页零 serious。
+**2026-09-27 测试基线**：Vitest 65 例 / Playwright 63 例全绿，lint 零警告，build 零错误，axe 扫描 12 页零 serious。
