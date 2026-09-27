@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { MainLayout } from '@/components/layouts/MainLayout';
 import { FavoritesProvider } from '@/lib/FavoritesProvider';
 import { LikesProvider } from '@/lib/LikesProvider';
+import { FollowsProvider } from '@/lib/FollowsProvider';
 import { ToastProvider } from '@/lib/ToastProvider';
 import { AuthProvider } from '@/lib/AuthProvider';
 import { WorksProvider } from '@/lib/WorksProvider';
@@ -46,6 +47,7 @@ function App() {
           <WorksProvider>
             <FavoritesProvider>
               <LikesProvider>
+                <FollowsProvider>
                 <MainLayout>
                   <Suspense fallback={<RouteFallback />}>
                     <Routes>
@@ -66,6 +68,7 @@ function App() {
                   </Suspense>
                 </MainLayout>
                 <AuthModal />
+                </FollowsProvider>
               </LikesProvider>
             </FavoritesProvider>
           </WorksProvider>

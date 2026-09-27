@@ -1,6 +1,7 @@
 import { useEffect, useState, useCallback, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { Icon } from '@/components/atoms/Icon';
+import { SmartImage } from '@/components/atoms/SmartImage';
 import { getExifFields } from '@/lib/exif';
 import type { Work } from '@/types';
 import { useBodyScrollLock } from '@/lib/hooks';
@@ -18,7 +19,6 @@ export function Lightbox({ works, currentIndex, isOpen, onClose, onIndexChange }
   const [imageLoaded, setImageLoaded] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
-  const imgRef = useRef<HTMLImageElement>(null);
 
   useBodyScrollLock(isOpen);
 
@@ -257,12 +257,12 @@ export function Lightbox({ works, currentIndex, isOpen, onClose, onIndexChange }
               <div className="w-10 h-10 border-2 border-white/20 border-t-accent rounded-full animate-spin" />
             </div>
           )}
-          <img
-            ref={imgRef}
+          <SmartImage
             src={imageSrc}
             alt={currentWork.title}
             className={`max-w-full max-h-[70vh] md:max-h-[75vh] object-contain rounded-lg transition-opacity duration-300 ${imageLoaded ? 'opacity-100' : 'opacity-0'}`}
             onLoad={() => setImageLoaded(true)}
+            onError={() => setImageLoaded(true)}
           />
         </div>
 
@@ -291,9 +291,10 @@ export function Lightbox({ works, currentIndex, isOpen, onClose, onIndexChange }
           <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
             <div className="flex items-center gap-3">
               {currentWork.authorAvatar && (
-                <img
+                <SmartImage
                   src={currentWork.authorAvatar}
                   alt={currentWork.author}
+                  fallbackText={currentWork.author.slice(0, 1).toUpperCase()}
                   className="w-10 h-10 rounded-full object-cover"
                 />
               )}

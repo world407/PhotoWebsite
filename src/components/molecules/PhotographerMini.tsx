@@ -1,8 +1,10 @@
 import { useMemo, useState } from 'react';
 import { Button } from '@/components/atoms/Button';
 import { Icon } from '@/components/atoms/Icon';
+import { SmartImage } from '@/components/atoms/SmartImage';
 import { photographers } from '@/data/mockData';
 import { useWorks } from '@/lib/works';
+import { useFollows } from '@/lib/follows';
 import type { Work } from '@/types';
 
 interface PhotographerMiniProps {
@@ -10,8 +12,9 @@ interface PhotographerMiniProps {
 }
 
 export function PhotographerMini({ work }: PhotographerMiniProps) {
-  const [isFollowed, setIsFollowed] = useState(false);
-  const [avatarError, setAvatarError] = useState(false);
+  // 无稳定 id 的作者（本地用户作品）无法持久化，退化为内存态
+  const [localFollowed, setLocalFollowed] = useState(false);
+  const { isFollowed: isPersistedFollowed, toggleFollow: togglePersistedFollow } = useFollows();
   const { works } = useWorks();
 
   const photographer = useMemo(() => {
@@ -41,6 +44,13 @@ export function PhotographerMini({ work }: PhotographerMiniProps) {
     return name.slice(0, 1).toUpperCase();
   }, [photographer, work.author]);
 
+  const followId = 'id' in photographer ? photographer.id : undefined;
+  const isFollowed = followId !== undefined ? isPersistedFollowed(followId) : localFollowed;
+  const handleToggleFollow = () => {
+    if (followId !== undefined) togglePersistedFollow(followId);
+    else setLocalFollowed((v) => !v);
+  };
+
   const displayWorksCount = photographer?.worksCount ?? 0;
   const displayFollowers = photographer?.followers ?? '0';
   const displayBio = photographer?.bio ?? '摄影师';
@@ -50,20 +60,14 @@ export function PhotographerMini({ work }: PhotographerMiniProps) {
     <section className="rounded-card bg-bg-card p-5">
       <div className="flex items-center gap-4">
         <div className="relative w-14 h-14 flex-shrink-0">
-          {avatarUrl && !avatarError ? (
-            <img
-              src={avatarUrl}
-              alt={photographer?.name || work.author}
-              className="w-full h-full rounded-full object-cover avatar-ring"
-              onError={() => setAvatarError(true)}
-              loading="lazy"
-              decoding="async"
-            />
-          ) : (
-            <div className="w-full h-full rounded-full bg-bg-deep flex items-center justify-center text-lg font-medium text-text-primary avatar-ring">
-              {initials}
-            </div>
-          )}
+          <SmartImage
+            src={avatarUrl}
+            alt={photographer?.name || work.author}
+            fallbackText={initials}
+            className="w-full h-full rounded-full object-cover avatar-ring"
+            loading="lazy"
+            decoding="async"
+          />
         </div>
 
         <div className="flex-1 min-w-0">
@@ -81,7 +85,8 @@ export function PhotographerMini({ work }: PhotographerMiniProps) {
         <Button
           variant={isFollowed ? 'outline' : 'follow'}
           size="sm"
-          onClick={() => setIsFollowed(!isFollowed)}
+          onClick={handleToggleFollow}
+          aria-pressed={isFollowed}
           className="flex-shrink-0"
         >
           {isFollowed ? (

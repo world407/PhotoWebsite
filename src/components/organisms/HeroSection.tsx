@@ -1,4 +1,5 @@
 import { AnnouncementBadge } from '@/components/molecules/AnnouncementBadge';
+import { SmartImage } from '@/components/atoms/SmartImage';
 import { GradientText } from '@/components/atoms/GradientText';
 import { Button } from '@/components/atoms/Button';
 import { Icon } from '@/components/atoms/Icon';
@@ -74,7 +75,7 @@ export function HeroSection() {
                 className="absolute -top-8 -left-10 w-[70%] rounded-card overflow-hidden shadow-card z-0"
                 style={{ transform: 'rotate(-8deg)' }}
               >
-                <img
+                <SmartImage
                   src="https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=500&h=650&fit=crop"
                   alt="自然风景"
                   className="w-full h-60 object-cover"
@@ -83,7 +84,7 @@ export function HeroSection() {
               </div>
               {/* Front Card - main hero image */}
               <div className="relative rounded-card overflow-hidden shadow-card z-10">
-                <img
+                <SmartImage
                   src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=700&h=880&fit=crop"
                   alt="精选风景摄影"
                   className="w-full h-[440px] lg:h-[520px] object-cover"

@@ -5,12 +5,17 @@ import { FavoritesProvider } from './FavoritesProvider';
 import { useFavorites } from './favorites';
 import { LikesProvider } from './LikesProvider';
 import { useLikes } from './likes';
+import { FollowsProvider } from './FollowsProvider';
+import { useFollows } from './follows';
 
 const favoritesWrapper = ({ children }: { children: ReactNode }) => (
   <FavoritesProvider>{children}</FavoritesProvider>
 );
 const likesWrapper = ({ children }: { children: ReactNode }) => (
   <LikesProvider>{children}</LikesProvider>
+);
+const followsWrapper = ({ children }: { children: ReactNode }) => (
+  <FollowsProvider>{children}</FollowsProvider>
 );
 
 describe('FavoritesProvider', () => {
@@ -85,5 +90,46 @@ describe('LikesProvider', () => {
 
     act(() => result.current.toggleLike(42));
     expect(result.current.isLiked(42)).toBe(false);
+  });
+});
+
+describe('FollowsProvider', () => {
+  beforeEach(() => localStorage.clear());
+
+  it('初始无关注', () => {
+    const { result } = renderHook(() => useFollows(), { wrapper: followsWrapper });
+    expect(result.current.followedIds).toEqual([]);
+    expect(result.current.isFollowed(1)).toBe(false);
+  });
+
+  it('从 localStorage 恢复关注（摄影师卡片/迷你卡共享状态）', () => {
+    localStorage.setItem('photo_follows', '[2, 4]');
+    const { result } = renderHook(() => useFollows(), { wrapper: followsWrapper });
+    expect(result.current.isFollowed(2)).toBe(true);
+    expect(result.current.isFollowed(3)).toBe(false);
+  });
+
+  it('损坏数据容错 + toggle 持久化，新挂载实例可回读', () => {
+    localStorage.setItem('photo_follows', 'broken');
+    const { result, unmount } = renderHook(() => useFollows(), { wrapper: followsWrapper });
+    expect(result.current.followedIds).toEqual([]);
+
+    act(() => result.current.toggleFollow(5));
+    expect(result.current.isFollowed(5)).toBe(true);
+    expect(localStorage.getItem('photo_follows')).toBe('[5]');
+
+    unmount();
+    const second = renderHook(() => useFollows(), { wrapper: followsWrapper });
+    expect(second.result.current.isFollowed(5)).toBe(true);
+
+    act(() => second.result.current.toggleFollow(5));
+    expect(second.result.current.isFollowed(5)).toBe(false);
+    expect(localStorage.getItem('photo_follows')).toBe('[]');
+  });
+
+  it('过滤非数字条目', () => {
+    localStorage.setItem('photo_follows', '[1, "x", null]');
+    const { result } = renderHook(() => useFollows(), { wrapper: followsWrapper });
+    expect(result.current.followedIds).toEqual([1]);
   });
 });

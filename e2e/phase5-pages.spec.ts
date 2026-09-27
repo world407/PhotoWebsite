@@ -52,12 +52,40 @@ test('Journal：6 篇日志且"相关作品"可跳分类筛选', async ({ page }
   await page.waitForURL(/\/gallery\?tag=/);
 });
 
-test('Photographers：5 张摄影师卡，关注按钮可切换', async ({ page }) => {
+test('Photographers：5 张摄影师卡，关注状态可切换且刷新后持久化', async ({ page }) => {
   await page.goto('/photographers');
-  const followButtons = page.locator('main').getByRole('button', { name: '关注' });
-  await expect(followButtons).toHaveCount(5);
-  await followButtons.first().click();
-  await expect(page.locator('main').getByRole('button', { name: '已关注' }).first()).toBeVisible();
+  const unfollowedBtn = () => page.locator('main').getByRole('button', { name: /^关注$/ });
+  const followedBtn = () => page.locator('main').getByRole('button', { name: /已关注/ });
+  await expect(unfollowedBtn()).toHaveCount(5);
+  await unfollowedBtn().first().click();
+  await expect(followedBtn().first()).toBeVisible();
+
+  // 刷新后关注状态从 localStorage 恢复（4 个未关注 + 1 个已关注）
+  await page.reload();
+  await expect(followedBtn()).toHaveCount(1);
+  await expect(unfollowedBtn()).toHaveCount(4);
+
+  // 跨页面一致：作品 1 作者林风（id 1）的详情页迷你卡同步显示已关注
+  await page.goto('/photo/1');
+  const miniFollowed = page.locator('main').getByRole('button', { name: /已关注/ });
+  await expect(miniFollowed).toBeVisible();
+  await miniFollowed.click();
+
+  // 在详情页取消后，列表页同步恢复
+  await page.goto('/photographers');
+  await expect(followedBtn()).toHaveCount(0);
+  await expect(unfollowedBtn()).toHaveCount(5);
+});
+
+test('图片降级：专题封面加载失败时展示占位而非裂图', async ({ page }) => {
+  // work 18「雪山倒影」是「自然之境」封面
+  await page.route('**/photo-1464822759023-fed622ff2c3b*', (route) => route.abort());
+  await page.goto('/projects');
+
+  await expect(page.getByText('图片加载失败').first()).toBeVisible();
+  // 卡片跳转功能不受影响
+  await page.locator('main').locator('a[href^="/gallery?tag="]').first().click();
+  await page.waitForURL(/\/gallery\?tag=/);
 });
 
 test('孤儿页入口：Footer 与移动抽屉可到达摄影专题/日志', async ({ page }) => {

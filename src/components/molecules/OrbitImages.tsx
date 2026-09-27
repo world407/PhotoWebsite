@@ -8,6 +8,7 @@ import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import type { ReactNode } from 'react';
 import type { MotionValue } from 'motion/react';
 import { animate, motion, useMotionValue, useTransform } from 'motion/react';
+import { SmartImage } from '@/components/atoms/SmartImage';
 import './OrbitImages.css';
 
 export interface OrbitImage {
@@ -304,7 +305,7 @@ export function OrbitImages({
         : 'auto';
 
   const items = images.map((image, index) => (
-    <img
+    <SmartImage
       key={`${image.src}-${index}`}
       src={image.src}
       alt={image.alt ?? `${altPrefix} ${index + 1}`}
@@ -312,6 +313,7 @@ export function OrbitImages({
       className="orbit-image"
       loading="lazy"
       decoding="async"
+      fallback={<div className="orbit-image" aria-hidden="true" />}
     />
   ));
 

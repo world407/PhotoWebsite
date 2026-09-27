@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { ReactNode } from 'react';
 import { motion, useMotionValue, useReducedMotion, useTransform } from 'motion/react';
+import { SmartImage } from '@/components/atoms/SmartImage';
 import './Stack.css';
 
 /** 单张堆叠卡片的数据 */
@@ -204,7 +205,7 @@ export function Stack({
                 : { type: 'spring', stiffness: animationConfig.stiffness, damping: animationConfig.damping }
             }
           >
-            <img
+            <SmartImage
               src={card.imageUrl}
               srcSet={buildSrcSet(card.imageUrl, width, height)}
               sizes={`${width}px`}

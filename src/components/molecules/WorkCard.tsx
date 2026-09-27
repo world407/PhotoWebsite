@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { SmartImage } from '@/components/atoms/SmartImage';
 import { ShimmerPlaceholder } from '@/components/atoms/ShimmerPlaceholder';
 import { Icon } from '@/components/atoms/Icon';
 import { SpotlightCard } from '@/components/molecules/SpotlightCard';
@@ -71,7 +72,7 @@ export function WorkCard({ work, index, onClick, showAuthor = true }: WorkCardPr
           </>
         )}
         
-        <img
+        <SmartImage
           src={work.imageUrl}
           srcSet={buildSrcSet(work.imageUrl)}
           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
@@ -82,6 +83,7 @@ export function WorkCard({ work, index, onClick, showAuthor = true }: WorkCardPr
           height={Math.round(600 / work.aspectRatio)}
           className={`w-full h-full object-cover ${loaded ? 'opacity-100' : 'opacity-0'}`}
           onLoad={() => setLoaded(true)}
+          onError={() => setLoaded(true)}
         />
 
         {/* 整图主操作覆盖层：与收藏按钮为兄弟节点，避免 button 嵌套；透明、键盘可聚焦 */}
@@ -126,9 +128,10 @@ export function WorkCard({ work, index, onClick, showAuthor = true }: WorkCardPr
         <div className="flex items-center justify-between mt-3 px-1">
           <div className="flex items-center gap-2">
             {work.authorAvatar && (
-              <img 
-                src={work.authorAvatar} 
+              <SmartImage
+                src={work.authorAvatar}
                 alt={work.author}
+                fallbackText={work.author.slice(0, 1).toUpperCase()}
                 className="w-6 h-6 rounded-full object-cover"
                 loading="lazy"
               />

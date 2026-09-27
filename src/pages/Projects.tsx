@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { SmartImage } from '@/components/atoms/SmartImage';
 import { SectionHeader } from '@/components/molecules/SectionHeader';
 import { Icon } from '@/components/atoms/Icon';
 import { works } from '@/data/mockData';
@@ -68,7 +69,7 @@ export function Projects() {
               >
                 <div className="relative overflow-hidden" style={{ aspectRatio: '4 / 3' }}>
                   {cover && (
-                    <img
+                    <SmartImage
                       src={cover.imageUrl}
                       alt={project.title}
                       loading="lazy"

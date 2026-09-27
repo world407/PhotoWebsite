@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Icon } from '@/components/atoms/Icon';
+import { SmartImage } from '@/components/atoms/SmartImage';
 import { ShimmerPlaceholder } from '@/components/atoms/ShimmerPlaceholder';
 import type { Work } from '@/types';
 
@@ -10,12 +11,10 @@ interface PhotoHeroProps {
 
 export function PhotoHero({ work, onOpenLightbox }: PhotoHeroProps) {
   const [loaded, setLoaded] = useState(false);
-  const [error, setError] = useState(false);
 
-  // Reset loading/error state when switching between works
+  // Reset loading state when switching between works
   useEffect(() => {
     setLoaded(false);
-    setError(false);
   }, [work.id]);
 
   const fullUrl = work.fullUrl || work.imageUrl;
@@ -31,18 +30,11 @@ export function PhotoHero({ work, onOpenLightbox }: PhotoHeroProps) {
       className="relative w-full overflow-hidden rounded-image bg-bg-deep"
       style={{ aspectRatio: `${work.aspectRatio}` }}
     >
-      {!loaded && !error && (
+      {!loaded && (
         <ShimmerPlaceholder className="z-10" style={{ backgroundColor: work.color }} />
       )}
 
-      {error && (
-        <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-3 bg-bg-card text-text-secondary">
-          <Icon name="image" size={48} className="opacity-40" />
-          <p className="text-sm">图片加载失败</p>
-        </div>
-      )}
-
-      <img
+      <SmartImage
         src={fullUrl}
         srcSet={srcSet}
         sizes="(max-width: 640px) 100vw, (max-width: 1024px) 90vw, 1200px"
@@ -52,7 +44,7 @@ export function PhotoHero({ work, onOpenLightbox }: PhotoHeroProps) {
         width={naturalWidth}
         height={naturalHeight}
         onLoad={() => setLoaded(true)}
-        onError={() => setError(true)}
+        onError={() => setLoaded(true)}
         className={`w-full h-full object-cover transition-opacity duration-500 ease-smooth ${
           loaded ? 'opacity-100' : 'opacity-0'
         }`}

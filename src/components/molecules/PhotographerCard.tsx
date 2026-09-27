@@ -1,7 +1,8 @@
-import { useState } from 'react';
 import { Button } from '@/components/atoms/Button';
+import { SmartImage } from '@/components/atoms/SmartImage';
 import type { Photographer } from '@/types';
 import { useIntersectionObserver } from '@/lib/hooks';
+import { useFollows } from '@/lib/follows';
 
 interface PhotographerCardProps {
   photographer: Photographer;
@@ -9,8 +10,10 @@ interface PhotographerCardProps {
 }
 
 export function PhotographerCard({ photographer, index }: PhotographerCardProps) {
-  const [isFollowed, setIsFollowed] = useState(photographer.isFollowed ?? false);
+  const { isFollowed, toggleFollow } = useFollows();
   const { ref, isVisible } = useIntersectionObserver<HTMLDivElement>();
+
+  const followed = isFollowed(photographer.id);
 
   return (
     <div
@@ -19,9 +22,10 @@ export function PhotographerCard({ photographer, index }: PhotographerCardProps)
       style={{ transitionDelay: `${index * 100}ms` }}
     >
       <div className="avatar-ring w-20 h-20 rounded-full border-transparent p-0.5 mx-auto">
-        <img
+        <SmartImage
           src={photographer.avatarUrl}
           alt={photographer.name}
+          fallbackText={photographer.name.slice(0, 1)}
           className="w-full h-full rounded-full object-cover"
           loading="lazy"
           width={80}
@@ -40,10 +44,11 @@ export function PhotographerCard({ photographer, index }: PhotographerCardProps)
       </div>
       <Button
         variant="follow"
-        className={`mt-5 w-full ${isFollowed ? 'followed' : ''}`}
-        onClick={() => setIsFollowed(!isFollowed)}
+        className={`mt-5 w-full ${followed ? 'followed' : ''}`}
+        aria-pressed={followed}
+        onClick={() => toggleFollow(photographer.id)}
       >
-        {isFollowed ? '已关注' : '关注'}
+        {followed ? '已关注' : '关注'}
       </Button>
     </div>
   );
