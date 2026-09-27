@@ -255,12 +255,16 @@
 2. **孤儿页面**：`/projects` 与 `/journal` 路由存在但全站零入口；已加入 Footer 快捷链接与移动端抽屉菜单。
 3. **测试缺口**：新增 `e2e/phase5-pages.spec.ts` 9 例（五页标题+零裂图+零控制台错误、专题卡/日志链接跳转、关注按钮、Footer/抽屉入口），axe 扫描扩至 11 页。
 
+### P2 缺口修复（2026-09-27）
+
+- ✅ **关注持久化**：新增 `FollowsProvider`（localStorage `photo_follows`，模式与收藏/点赞一致），PhotographerCard 与详情页 PhotographerMini 共享关注状态，刷新与跨页面不丢；无稳定 id 的本地用户作品作者退化为内存态
+- ✅ **图片 onError 降级**：新增 `atoms/SmartImage`——作品图失败展示深色占位（图标+「图片加载失败」），头像失败展示首字圆形占位，src 切换自动重置；已接入 WorkCard（主图/作者头像）、Projects 封面、HeroSection、Lightbox（主图/头像）、PhotoHero、PhotographerCard、PhotographerMini、OrbitImages、Stack
+- 测试：单测 56→65（FollowsProvider 4 例、SmartImage 5 例）；E2E 57→58（关注刷新持久化+列表/详情跨页同步、封面 abort 降级）
+
 ### 遗留 P2 缺口（审计记录，未在本轮修复）
 
-- 摄影师「关注」为组件内存状态（PhotographerCard / PhotographerMini 的 `useState`），刷新即失，未像收藏/点赞一样持久化
 - `/photographers/:id` 摄影师主页不存在，摄影师卡整卡不可点
 - Journal 无 `/journal/:id` 详情页，文章仅摘要列表
-- 全站图片无加载失败降级（裂图仅测试兜底，运行时无 onError 占位）
 
 ---
 
@@ -273,6 +277,6 @@
 ✅ Phase 4 COMPLETE（2026-09-26 核对）
 ✅ Phase 5 六页审计通过并修复缺陷（2026-09-27）
 
-**可选后续：Phase 5 遗留 P2 缺口（关注持久化、摄影师主页、日志详情、图片 onError 降级）。**
+**可选后续：摄影师主页 `/photographers/:id`、日志详情 `/journal/:id`。**
 
-**2026-09-27 测试基线**：Vitest 56 例 / Playwright 57 例全绿，lint 零警告，build 零错误，axe 扫描 11 页零 serious。
+**2026-09-27 测试基线**：Vitest 65 例 / Playwright 58 例全绿，lint 零警告，build 零错误，axe 扫描 11 页零 serious。

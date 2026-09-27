@@ -2,8 +2,8 @@
 # AGENT HANDOFF - 影·迹 PHOTOGRAPHY 项目交接文档
 
 **初版封档时间**：2026-08-16
-**最近核对**：2026-09-26 —— Phase 4 已 COMPLETE，Phase 5 页面均已存在（详见 `docs/PHASE_STATUS.md`）
-**下一阶段**：Phase 5 页面完成度审计与补齐（优先 Photographers）
+**最近核对**：2026-09-27 —— Phase 0-5 全部 COMPLETE：六页审计通过，裂图/孤儿入口已修，关注持久化与图片 onError 降级已补齐（详见 `docs/PHASE_STATUS.md`）
+**可选后续**：摄影师主页 `/photographers/:id`、日志详情 `/journal/:id`
 
 > ⚠️ 本文档第 3/6/7/8 节写于 Phase 3 封档时，目录与"限制"清单已过期；实际状态以 `docs/PHASE_STATUS.md` 与代码为准。
 
