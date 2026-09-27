@@ -14,7 +14,7 @@
 | Phase 2: Home 首页 | ✅ **COMPLETE** | 100% |
 | Phase 3: Gallery 摄影作品库 | ✅ **COMPLETE** | 100% |
 | Phase 4: Photo Detail | ✅ **COMPLETE**（2026-09-26 核对） | 100% |
-| Phase 5: 其他页面 | 🔍 页面均已存在，完成度待审计 | — |
+| Phase 5: 其他页面 | ✅ 六页完成度审计通过（2026-09-27），发现的裂图与孤儿入口已修 | 100%（已知 P2 缺口除外） |
 
 ---
 
@@ -233,19 +233,34 @@
 
 ---
 
-## Phase 5: 其他页面 🔍 页面均已存在，完成度待审计（2026-09-26）
+## Phase 5: 其他页面 ✅ 审计通过（2026-09-27）
 
-| 页面 | 路由 | 代码状态 |
+六页经源码取证 + 浏览器冒烟 + axe 扫描（11 页全绿），均为完整接线页面（真实数据、真实跳转、无占位文本）：
+
+| 页面 | 路由 | 审计结论 |
 |------|------|------|
-| About 关于 | `/about` | 页面已存在（约 78 行），完成度待审计 |
-| Projects 摄影专题 | `/projects` | 页面已存在（约 102 行），完成度待审计 |
-| Journal 摄影日志 | `/journal` | 页面已存在（约 75 行），完成度待审计 |
-| Contact 联系 | `/contact` | 页面已存在（约 95 行），完成度待审计 |
-| Favorites 收藏夹 | `/favorites` | 页面已存在（约 74 行），完成度待审计 |
-| Photographers 摄影师列表 | `/photographers` | 页面已存在（约 38 行），疑似半成品，优先审计 |
+| About 关于 | `/about` | 理念卡 + heroStats 统计（数字滚动动画，首帧为 0 属正常）+ 4 创作方向 + 跳转按钮 |
+| Projects 摄影专题 | `/projects` | 6 专题卡，封面取真实作品、计数取真实 tag 数量，点击跳 `/gallery?tag=` |
+| Journal 摄影日志 | `/journal` | 6 篇手记列表，每篇"相关作品"跳 `/gallery?tag=`；**无日志详情页（列表页设计，P2）** |
+| Contact 联系 | `/contact` | 合作方式 + 真实 mailto/帮助/作品库链接；无表单（与无后端约束一致） |
+| Favorites 收藏夹 | `/favorites` | 接 `useFavorites` 持久数据 + WorkCard 网格 + 空状态 + 滚动恢复 |
+| Photographers 摄影师 | `/photographers` | 5 张卡（真实数据）+ OrbitImages 动画；卡片**不可点进摄影师主页（路由不存在，P2）** |
 | 上传作品（计划外） | `/upload` | 已实现：本地账号、IDB 存储、图片处理、错误提示 |
 | 个人主页（计划外） | `/profile` | 已实现（约 202 行） |
 | 帮助（计划外） | `/help` | 已存在（约 86 行） |
+
+### 审计发现并修复（2026-09-27）
+
+1. **裂图**：work id 17「地铁众生」Unsplash 源图 `photo-1515347621331-257a04a35091` 已被删除（404，ORB 拦截），殃及 Gallery/首页/详情/Projects 封面四处；已替换为同主题轨道交通图 `photo-1474487548417-781cb71495f3`（浏览器实测 600/1600 两尺寸可加载）。
+2. **孤儿页面**：`/projects` 与 `/journal` 路由存在但全站零入口；已加入 Footer 快捷链接与移动端抽屉菜单。
+3. **测试缺口**：新增 `e2e/phase5-pages.spec.ts` 9 例（五页标题+零裂图+零控制台错误、专题卡/日志链接跳转、关注按钮、Footer/抽屉入口），axe 扫描扩至 11 页。
+
+### 遗留 P2 缺口（审计记录，未在本轮修复）
+
+- 摄影师「关注」为组件内存状态（PhotographerCard / PhotographerMini 的 `useState`），刷新即失，未像收藏/点赞一样持久化
+- `/photographers/:id` 摄影师主页不存在，摄影师卡整卡不可点
+- Journal 无 `/journal/:id` 详情页，文章仅摘要列表
+- 全站图片无加载失败降级（裂图仅测试兜底，运行时无 onError 占位）
 
 ---
 
@@ -256,7 +271,8 @@
 ✅ Phase 2 COMPLETE
 ✅ Phase 3 COMPLETE
 ✅ Phase 4 COMPLETE（2026-09-26 核对）
+✅ Phase 5 六页审计通过并修复缺陷（2026-09-27）
 
-**下一步：审计 Phase 5 各页面完成度（优先 Photographers）。**
+**可选后续：Phase 5 遗留 P2 缺口（关注持久化、摄影师主页、日志详情、图片 onError 降级）。**
 
-**2026-09-26 测试基线**：Vitest 56 例 / Playwright 43 例全绿，lint 零警告，build 零错误。
+**2026-09-27 测试基线**：Vitest 56 例 / Playwright 57 例全绿，lint 零警告，build 零错误，axe 扫描 11 页零 serious。

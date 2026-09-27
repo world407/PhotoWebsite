@@ -2,7 +2,7 @@
 
 ⚠️ **所有 AI Agent 在开始开发前必须阅读此文件。**
 
-**封档状态**：Phase 0-4 COMPLETE（2026-09-26 核对） | 下一阶段：Phase 5 页面完成度审计与补齐（About/Projects/Journal/Contact/Favorites/Photographers 页面均已存在，待审计完成度）
+**封档状态**：Phase 0-5 COMPLETE（Phase 5 六页 2026-09-27 审计通过） | 可选后续：关注持久化 / 摄影师主页 / 日志详情 / 图片 onError 降级（详见 docs/PHASE_STATUS.md）
 
 ---
 
