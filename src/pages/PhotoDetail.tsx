@@ -1,8 +1,7 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { DetailBreadcrumb } from '@/components/atoms/DetailBreadcrumb';
 import { PhotoHero } from '@/components/organisms/PhotoHero';
-import { RippleDistortion } from '@/components/organisms/RippleDistortion';
 import { PhotoInfo } from '@/components/molecules/PhotoInfo';
 import { PhotoActions } from '@/components/molecules/PhotoActions';
 import { ExifPanel } from '@/components/molecules/ExifPanel';
@@ -14,6 +13,12 @@ import { useWorks } from '@/lib/works';
 import type { Work } from '@/types';
 import { useSwipe, useMediaQuery } from '@/lib/hooks';
 import { NotFound } from '@/pages/NotFound';
+
+// WebGL 涟漪按需加载：避免 ogl+motion（vendor-webgl 约 219KB）进入首屏关键路径；
+// 加载期间 PhotoHero 静态原图直接展示，与 GL 降级路径一致，无布局偏移
+const RippleDistortion = lazy(() =>
+  import('@/components/organisms/RippleDistortion').then((m) => ({ default: m.RippleDistortion })),
+);
 
 export function PhotoDetail() {
   const { id } = useParams<{ id: string }>();
@@ -148,7 +153,9 @@ export function PhotoDetail() {
               onOpenLightbox={() => setLightboxOpen(true)}
             />
             {/* WebGL 涟漪覆盖层：视觉增强，GL 失败/纹理未就绪/减弱动效时自动降级为原图 */}
-            <RippleDistortion src={currentWork.fullUrl || currentWork.imageUrl} />
+            <Suspense fallback={null}>
+              <RippleDistortion src={currentWork.fullUrl || currentWork.imageUrl} />
+            </Suspense>
           </div>
         </section>
 
