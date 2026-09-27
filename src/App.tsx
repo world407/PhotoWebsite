@@ -1,5 +1,6 @@
 import { lazy, Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { HelmetProvider } from 'react-helmet-async';
 import { MainLayout } from '@/components/layouts/MainLayout';
 import { FavoritesProvider } from '@/lib/FavoritesProvider';
 import { LikesProvider } from '@/lib/LikesProvider';
@@ -44,7 +45,8 @@ function RouteFallback() {
 
 function App() {
   return (
-    <Router>
+    <HelmetProvider>
+      <Router>
       <ComposeProviders
         providers={[ToastProvider, AuthProvider, WorksProvider, FavoritesProvider, LikesProvider, FollowsProvider]}
       >
@@ -71,7 +73,8 @@ function App() {
         </MainLayout>
         <AuthModal />
       </ComposeProviders>
-    </Router>
+      </Router>
+    </HelmetProvider>
   );
 }
 

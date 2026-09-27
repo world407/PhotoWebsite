@@ -76,7 +76,7 @@ export function PhotoDetail() {
       },
     };
   }, [currentWork]);
-  usePageMeta(pageMeta);
+  const meta = usePageMeta(pageMeta);
 
   const goToWork = useCallback((work: Work) => {
     navigate(`/photo/${work.id}`);
@@ -155,11 +155,17 @@ export function PhotoDetail() {
   });
 
   if (!currentWork) {
-    return <NotFound />;
+    return (
+      <>
+        {meta}
+        <NotFound />
+      </>
+    );
   }
 
   return (
     <>
+      {meta}
       <main
         ref={mainRef}
         className="min-h-screen bg-bg-base animate-page-enter"

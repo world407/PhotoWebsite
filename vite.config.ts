@@ -77,6 +77,14 @@ function seoFilesPlugin(): Plugin {
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react(), seoFilesPlugin()],
+  // 仅 vite-react-ssg CLI 读取；原生 vite build / dev 忽略此字段，CSR 流程不受影响
+  ssgOptions: {
+    entry: 'src/main-ssg.tsx',
+    dirStyle: 'flat',
+    formatting: 'none',
+    // framer-motion 的 useTransform 在 render 期访问 window，用 jsdom 注入浏览器全局
+    mock: true,
+  },
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),

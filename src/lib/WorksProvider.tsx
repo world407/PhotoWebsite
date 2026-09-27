@@ -15,7 +15,9 @@ function todayString(): string {
 export function WorksProvider({ children }: { children: ReactNode }) {
   const { user } = useAuth();
   const [userWorks, setUserWorks] = useState<Work[]>([]);
-  const [ready, setReady] = useState(false);
+  // 无 IndexedDB 的环境（SSG 构建的 jsdom）用户作品必然为空，初始即就绪，
+  // 否则 SSR 期间不执行 effect，摄影师详情页会被渲染成 busy 占位
+  const [ready, setReady] = useState(() => typeof indexedDB === 'undefined');
 
   // 启动：从 IndexedDB 读取用户作品（隐私模式降级为空数组 + 内存态）
   useEffect(() => {

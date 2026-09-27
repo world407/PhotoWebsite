@@ -42,7 +42,7 @@ export function PhotographerDetail() {
       },
     };
   }, [photographer]);
-  usePageMeta(pageMeta);
+  const meta = usePageMeta(pageMeta);
 
   const openWork = (workId: number) => {
     saveScrollPosition();
@@ -52,12 +52,25 @@ export function PhotographerDetail() {
   // 非法 / 不存在的摄影师 ID：与照片详情一致，渲染 404
   // worksReady 之前不判定，避免用户作品短暂合并时闪烁
   if (!photographer || !worksReady) {
-    if (worksReady && !photographer) return <NotFound />;
-    return <main className="pt-32 pb-20 md:pt-40" aria-busy="true" />;
+    if (worksReady && !photographer) {
+      return (
+        <>
+          {meta}
+          <NotFound />
+        </>
+      );
+    }
+    return (
+      <>
+        {meta}
+        <main className="pt-32 pb-20 md:pt-40" aria-busy="true" />
+      </>
+    );
   }
 
   return (
     <main className="pt-32 pb-20 md:pt-40 md:pb-24">
+      {meta}
       <div className="container-main max-w-6xl">
         <nav aria-label="面包屑" className="mb-6 flex items-center gap-2 text-sm text-text-muted">
           <Link

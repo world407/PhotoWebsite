@@ -112,9 +112,16 @@ export function JournalDetail() {
       },
     };
   }, [post]);
-  usePageMeta(pageMeta);
+  const meta = usePageMeta(pageMeta);
 
-  if (!post) return <NotFound />;
+  if (!post) {
+    return (
+      <>
+        {meta}
+        <NotFound />
+      </>
+    );
+  }
 
   const index = journalPosts.findIndex((p) => p.id === post.id);
   // 列表按时间倒序展示：「下一篇」是列表中更新的一篇（索引更小）
@@ -125,6 +132,7 @@ export function JournalDetail() {
 
   return (
     <main className="pt-32 pb-20 md:pt-40 md:pb-24">
+      {meta}
       <div className="container-main max-w-3xl">
         {/* 面包屑 */}
         <nav aria-label="面包屑" className="mb-6 flex items-center gap-2 text-sm text-text-muted">
