@@ -273,6 +273,12 @@
 - 入口：日志列表整卡 overlay Link（"相关作品"链接 z-10 仍可点，卡尾补充标签与阅读时长）
 - 测试：新增 `e2e/journal-detail.spec.ts` 5 例（列表进入+零裂图零报错、相关作品两处入口、上下篇边界、作者互通、404），移动端单列/无横溢 1 例，axe 扫描 12→13 页
 
+### 工程加固（2026-09-27，采纳外部评审）
+
+- ✅ RippleDistortion 改为组件级懒加载：vendor-webgl（ogl+motion，219KB）移出首屏关键路径（index.html 的 modulepreload 已无该 chunk），入口主包 112.7→104.2KB；PhotoHero 静态原图作为 Suspense fallback，无布局偏移
+- ✅ 新增 ComposeProviders：App 六层 Provider 嵌套拍平为数组组合，顺序与行为不变
+- ✅ 新增封档页视觉回归：`/` 与 `/gallery` × 桌面/移动共 4 张 win32 基线（滚动触发 IO 入场后全页截图，maxDiffPixelRatio 0.02）。仅本地执行——GitHub Actions 的 Linux 字体渲染与基线环境不同；有意的设计变更后用 `--update-snapshots` 重新生成并在提交信息注明
+
 ---
 
 ## 封档确认
@@ -287,4 +293,4 @@
 
 **Phase 0-5 及全部可选后续均已 COMPLETE，无遗留缺口。**
 
-**2026-09-27 测试基线**：Vitest 65 例 / Playwright 70 例全绿，lint 零警告，build 零错误，axe 扫描 13 页零 serious。
+**2026-09-27 测试基线**：Vitest 65 例 / Playwright 74 例全绿（含 4 例封档页视觉回归，仅本地执行），lint 零警告，build 零错误，axe 扫描 13 页零 serious。
