@@ -83,4 +83,6 @@ const ssgRoutes: RouteRecord[] = [
   },
 ];
 
-export const createRoot = ViteReactSSG({ routes: ssgRoutes });
+// basename 与 vite base（BASE_PATH 环境变量注入）保持一致：
+// SSR 渲染与客户端水合都以此为路由前缀（GitHub Pages 项目页 = /PhotoWebsite/）
+export const createRoot = ViteReactSSG({ routes: ssgRoutes, basename: import.meta.env.BASE_URL });

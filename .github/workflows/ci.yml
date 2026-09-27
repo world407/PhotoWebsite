@@ -68,3 +68,56 @@ jobs:
             playwright-report
             test-results
           retention-days: 7
+
+  deploy-pages:
+    name: Deploy SSG to GitHub Pages
+    # 仅 main 分支推送时部署；门禁双 Job 全绿才执行
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: [quality-gate, e2e]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+      # 允许 configure-pages 首次自动启用 Pages
+      administration: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: SSG 预渲染构建（GitHub Pages 子路径 base）
+        run: npm run build:ssg
+        env:
+          BASE_PATH: /PhotoWebsite/
+
+      - name: SPA fallback（未预渲染路径交给客户端路由渲染 404）
+        run: cp dist/index.html dist/404.html
+
+      - name: 禁用 Jekyll 处理（保留下划线开头目录）
+        run: touch dist/.nojekyll
+
+      - name: 配置 GitHub Pages
+        uses: actions/configure-pages@v5
+        with:
+          enablement: true
+
+      - name: 上传部署产物
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+      - name: 部署到 GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

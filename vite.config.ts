@@ -7,6 +7,10 @@ import { journalPosts, journalDateToIso } from './src/data/journal'
 // 部署后改为实际站点域名（含协议、不带尾斜杠）；sitemap / RSS 的绝对链接依赖它
 const SITE_URL = 'https://world407.github.io/PhotoWebsite'
 
+// GitHub Pages 对目录 URL 会 301 到带尾斜杠的形式（/photo/1 → /photo/1/），
+// sitemap / RSS 直接给出最终地址，避免爬虫多一跳重定向
+const canonical = (u: string) => (u === '/' ? u : `${u.replace(/\/$/, '')}/`)
+
 const escapeXml = (s: string) =>
   s.replace(/[<>&'"]/g, (c) =>
     ({ '<': '&lt;', '>': '&gt;', '&': '&amp;', "'": '&apos;', '"': '&quot;' })[c] as string,
@@ -29,7 +33,7 @@ const buildSitemap = () => {
     ...photographers.map((p) => `/photographers/${p.id}`),
     ...journalPosts.map((p) => `/journal/${p.id}`),
   ]
-  const body = urls.map((u) => `  <url><loc>${SITE_URL}${u}</loc></url>`).join('\n')
+  const body = urls.map((u) => `  <url><loc>${SITE_URL}${canonical(u)}</loc></url>`).join('\n')
   return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${body}\n</urlset>\n`
 }
 
@@ -39,8 +43,7 @@ const buildRobots = () =>
 const buildRss = () => {
   const items = journalPosts
     .map(
-      (p) =>
-        `  <item>\n    <title>${escapeXml(p.title)}</title>\n    <link>${SITE_URL}/journal/${p.id}</link>\n    <guid isPermaLink="true">${SITE_URL}/journal/${p.id}</guid>\n    <pubDate>${new Date(journalDateToIso(p.date)).toUTCString()}</pubDate>\n    <description>${escapeXml(p.excerpt)}</description>\n  </item>`,
+      (p) => `  <item>\n    <title>${escapeXml(p.title)}</title>\n    <link>${SITE_URL}${canonical(`/journal/${p.id}`)}</link>\n    <guid isPermaLink="true">${SITE_URL}${canonical(`/journal/${p.id}`)}</guid>\n    <pubDate>${new Date(journalDateToIso(p.date)).toUTCString()}</pubDate>\n    <description>${escapeXml(p.excerpt)}</description>\n  </item>`,
     )
     .join('\n')
   return `<?xml version="1.0" encoding="UTF-8"?>\n<rss version="2.0"><channel>\n  <title>影·迹 PHOTOGRAPHY — 摄影日志</title>\n  <link>${SITE_URL}/journal</link>\n  <description>创作手记与拍摄故事</description>\n  <language>zh-CN</language>\n${items}\n</channel></rss>\n`
@@ -77,10 +80,14 @@ function seoFilesPlugin(): Plugin {
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react(), seoFilesPlugin()],
-  // 仅 vite-react-ssg CLI 读取；原生 vite build / dev 忽略此字段，CSR 流程不受影响
+  // GitHub Pages 项目页部署在 /PhotoWebsite/ 子路径下：
+  // 仅部署构建时通过环境变量注入（CI 的 deploy job），dev / E2E / 默认构建保持 '/'
+  base: process.env.BASE_PATH || '/',
+  // 仅 vite-react-ssg CLI 读取；原生 vite build / dev 忽略此字段，CSR 流程不受影响。
+  // nested：每路由输出 目录/index.html，GitHub Pages 才能用无扩展名 URL 访问（/photo/1）
   ssgOptions: {
     entry: 'src/main-ssg.tsx',
-    dirStyle: 'flat',
+    dirStyle: 'nested',
     formatting: 'none',
     // framer-motion 的 useTransform 在 render 期访问 window，用 jsdom 注入浏览器全局
     mock: true,
