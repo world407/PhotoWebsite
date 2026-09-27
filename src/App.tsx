@@ -4,6 +4,7 @@ import { MainLayout } from '@/components/layouts/MainLayout';
 import { FavoritesProvider } from '@/lib/FavoritesProvider';
 import { LikesProvider } from '@/lib/LikesProvider';
 import { FollowsProvider } from '@/lib/FollowsProvider';
+import { ComposeProviders } from '@/lib/ComposeProviders';
 import { ToastProvider } from '@/lib/ToastProvider';
 import { AuthProvider } from '@/lib/AuthProvider';
 import { WorksProvider } from '@/lib/WorksProvider';
@@ -44,13 +45,10 @@ function RouteFallback() {
 function App() {
   return (
     <Router>
-      <ToastProvider>
-        <AuthProvider>
-          <WorksProvider>
-            <FavoritesProvider>
-              <LikesProvider>
-                <FollowsProvider>
-                <MainLayout>
+      <ComposeProviders
+        providers={[ToastProvider, AuthProvider, WorksProvider, FavoritesProvider, LikesProvider, FollowsProvider]}
+      >
+        <MainLayout>
                   <Suspense fallback={<RouteFallback />}>
                     <Routes>
                       <Route path="/" element={<Home />} />
@@ -70,14 +68,9 @@ function App() {
                       <Route path="*" element={<NotFound />} />
                     </Routes>
                   </Suspense>
-                </MainLayout>
-                <AuthModal />
-                </FollowsProvider>
-              </LikesProvider>
-            </FavoritesProvider>
-          </WorksProvider>
-        </AuthProvider>
-      </ToastProvider>
+        </MainLayout>
+        <AuthModal />
+      </ComposeProviders>
     </Router>
   );
 }
