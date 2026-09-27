@@ -79,8 +79,6 @@ jobs:
       contents: read
       pages: write
       id-token: write
-      # 允许 configure-pages 首次自动启用 Pages
-      administration: write
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
@@ -109,9 +107,9 @@ jobs:
         run: touch dist/.nojekyll
 
       - name: 配置 GitHub Pages
+        # 要求 Pages 已在仓库 Settings 中启用（Source: GitHub Actions）——
+        # GITHUB_TOKEN 无 administration 权限，enablement 自动启用不可用
         uses: actions/configure-pages@v5
-        with:
-          enablement: true
 
       - name: 上传部署产物
         uses: actions/upload-pages-artifact@v3
