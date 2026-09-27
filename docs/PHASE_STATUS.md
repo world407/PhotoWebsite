@@ -279,6 +279,17 @@
 - ✅ 新增 ComposeProviders：App 六层 Provider 嵌套拍平为数组组合，顺序与行为不变
 - ✅ 新增封档页视觉回归：`/` 与 `/gallery` × 桌面/移动共 4 张 win32 基线（滚动触发 IO 入场后全页截图，maxDiffPixelRatio 0.02）。仅本地执行——GitHub Actions 的 Linux 字体渲染与基线环境不同；有意的设计变更后用 `--update-snapshots` 重新生成并在提交信息注明
 
+### SEO 基建与 SSG 预渲染（2026-09-27，批次二）
+
+- ✅ 构建期 SEO 文件（`seoFilesPlugin`，零新增依赖）：`robots.txt`（声明 Sitemap）、`sitemap.xml`（40 URL = 11 静态 + 18 作品 + 5 摄影师 + 6 手记）、`feed.xml`（RSS，6 篇手记）；dev 由中间件提供同名路径，E2E 直接可访问
+- ✅ 路由级 title / meta description / JSON-LD（`usePageMeta` 基于 react-helmet-async）：作品详情 ImageObject、摄影师详情 Person、日志详情 Article；CSR 卸载自动恢复上一状态，Helmet 在 DOM 中渲染为 null，无可见副作用；调用方需把返回的 Helmet 元素渲染进组件输出（含 404 早退分支）
+- ✅ SSG 预渲染 PoC 落地（`vite-react-ssg@0.8.9` devDep，兼容 Vite 5；`react-helmet-async@1.3.0` runtime dep）：`npm run build:ssg` 生成 40 个静态 HTML 页，不执行 JS 的爬虫（含主流 AI 爬虫）可直接读取标题/正文/结构化数据
+  - `src/main-ssg.tsx` 为 SSG 专用入口（与 CSR 入口 `main.tsx` 并存，`build` 脚本保持 CSR 不变）；顶部 matchMedia polyfill 兜住 jsdom 缺失
+  - WorksProvider ready 初值改为「无 IndexedDB 的环境即就绪」——修复 SSR 期间 effect 不执行导致摄影师详情页被渲染成 busy 占位的问题
+  - Helmet 采集的 head 标签插入在模板默认标签之前（首个 `<title>` / `<meta>` 生效），模板默认值保留为无 Helmet 页面的兜底
+- 体积影响：vendor-react 283→307KB（raw；gzip +9KB，react-helmet-async 随 PhotoDetail 静态引用进入），入口主包 104.2→104.5KB 持平；`build:ssg` 不在 CI 门禁内
+- 测试：新增 `e2e/seo.spec.ts` 5 例（sitemap 40 URL、robots 声明 Sitemap、feed 6 item、三详情页 title+JSON-LD、404 title 不残留）；E2E 74→79（本地含 4 例视觉回归，CI 75）
+
 ---
 
 ## 封档确认
@@ -293,4 +304,4 @@
 
 **Phase 0-5 及全部可选后续均已 COMPLETE，无遗留缺口。**
 
-**2026-09-27 测试基线**：Vitest 65 例 / Playwright 74 例全绿（含 4 例封档页视觉回归，仅本地执行），lint 零警告，build 零错误，axe 扫描 13 页零 serious。
+**2026-09-27 测试基线**：Vitest 65 例 / Playwright 79 例全绿（SEO 5 例新增；含 4 例封档页视觉回归仅本地执行，CI 75 例），lint 零警告，build 零错误，axe 扫描 13 页零 serious。
