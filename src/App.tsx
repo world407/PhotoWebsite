@@ -25,6 +25,7 @@ const Help = lazy(() => import('@/pages/Help').then((m) => ({ default: m.Help })
 const Projects = lazy(() => import('@/pages/Projects').then((m) => ({ default: m.Projects })));
 const About = lazy(() => import('@/pages/About').then((m) => ({ default: m.About })));
 const Journal = lazy(() => import('@/pages/Journal').then((m) => ({ default: m.Journal })));
+const JournalDetail = lazy(() => import('@/pages/JournalDetail').then((m) => ({ default: m.JournalDetail })));
 const Contact = lazy(() => import('@/pages/Contact').then((m) => ({ default: m.Contact })));
 const Upload = lazy(() => import('@/pages/Upload').then((m) => ({ default: m.Upload })));
 const Profile = lazy(() => import('@/pages/Profile').then((m) => ({ default: m.Profile })));
@@ -62,6 +63,7 @@ function App() {
                       <Route path="/projects" element={<Projects />} />
                       <Route path="/about" element={<About />} />
                       <Route path="/journal" element={<Journal />} />
+                      <Route path="/journal/:id" element={<JournalDetail />} />
                       <Route path="/upload" element={<Upload />} />
                       <Route path="/profile" element={<Profile />} />
                       <Route path="/contact" element={<Contact />} />

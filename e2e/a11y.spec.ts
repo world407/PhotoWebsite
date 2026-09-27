@@ -11,6 +11,7 @@ const PAGES = [
   { path: '/about', name: '关于' },
   { path: '/projects', name: '摄影专题' },
   { path: '/journal', name: '摄影日志' },
+  { path: '/journal/sahara-sunset', name: '日志详情' },
   { path: '/contact', name: '联系我们' },
   { path: '/photographers', name: '摄影师' },
   { path: '/photographers/1', name: '摄影师主页' },

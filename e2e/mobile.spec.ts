@@ -43,4 +43,20 @@ test.describe('移动端（390×844 触控）', () => {
     await page.getByRole('button', { name: '首页' }).click();
     await expect(page).toHaveURL(/\/$/);
   });
+
+  test('日志详情：单列阅读布局，无横向溢出，上下篇导航纵向排列', async ({ page }) => {
+    await page.goto('/journal/sahara-sunset');
+    await page.getByRole('heading', { name: '在撒哈拉等待一场日落', level: 1 }).waitFor();
+
+    await expect(page.getByRole('link', { name: /查看相关作品/ })).toBeVisible();
+    const nav = page.getByRole('navigation', { name: '日志导航' });
+    await expect(nav.getByRole('link', { name: /上一篇/ })).toBeVisible();
+
+    // 无横向滚动
+    const overflow = await page.evaluate(() => ({
+      scrollW: document.documentElement.scrollWidth,
+      clientW: document.documentElement.clientWidth,
+    }));
+    expect(overflow.scrollW).toBe(overflow.clientW);
+  });
 });
