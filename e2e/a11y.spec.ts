@@ -13,6 +13,7 @@ const PAGES = [
   { path: '/journal', name: '摄影日志' },
   { path: '/contact', name: '联系我们' },
   { path: '/photographers', name: '摄影师' },
+  { path: '/photographers/1', name: '摄影师主页' },
 ] as const;
 
 async function audit(page: Page) {

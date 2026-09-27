@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { Button } from '@/components/atoms/Button';
 import { Icon } from '@/components/atoms/Icon';
 import { SmartImage } from '@/components/atoms/SmartImage';
@@ -44,6 +45,14 @@ export function PhotographerMini({ work }: PhotographerMiniProps) {
     return name.slice(0, 1).toUpperCase();
   }, [photographer, work.author]);
 
+  // mock 摄影师才有主页；本地用户作品作者无稳定 id，不提供链接
+  const profileId = useMemo(() => {
+    if (work.authorId) {
+      return photographers.some((p) => p.id === work.authorId) ? work.authorId : undefined;
+    }
+    return photographers.find((p) => p.name === work.author)?.id;
+  }, [work.authorId, work.author]);
+
   const followId = 'id' in photographer ? photographer.id : undefined;
   const isFollowed = followId !== undefined ? isPersistedFollowed(followId) : localFollowed;
   const handleToggleFollow = () => {
@@ -72,7 +81,16 @@ export function PhotographerMini({ work }: PhotographerMiniProps) {
 
         <div className="flex-1 min-w-0">
           <h3 className="text-body font-medium text-text-primary truncate">
-            {photographer?.name || work.author}
+            {profileId !== undefined ? (
+              <Link
+                to={`/photographers/${profileId}`}
+                className="hover:text-accent transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 rounded-sm"
+              >
+                {photographer?.name || work.author}
+              </Link>
+            ) : (
+              photographer?.name || work.author
+            )}
           </h3>
           <p className="text-caption text-text-muted truncate">{displayBio}</p>
           <div className="mt-1.5 flex items-center gap-3 text-caption text-text-secondary">

@@ -20,6 +20,7 @@ import { NotFound } from '@/pages/NotFound';
 // 页面均为命名导出，lazy 需 default，统一映射
 const Favorites = lazy(() => import('@/pages/Favorites').then((m) => ({ default: m.Favorites })));
 const Photographers = lazy(() => import('@/pages/Photographers').then((m) => ({ default: m.Photographers })));
+const PhotographerDetail = lazy(() => import('@/pages/PhotographerDetail').then((m) => ({ default: m.PhotographerDetail })));
 const Help = lazy(() => import('@/pages/Help').then((m) => ({ default: m.Help })));
 const Projects = lazy(() => import('@/pages/Projects').then((m) => ({ default: m.Projects })));
 const About = lazy(() => import('@/pages/About').then((m) => ({ default: m.About })));
@@ -56,6 +57,7 @@ function App() {
                       <Route path="/photo/:id" element={<PhotoDetail />} />
                       <Route path="/favorites" element={<Favorites />} />
                       <Route path="/photographers" element={<Photographers />} />
+                      <Route path="/photographers/:id" element={<PhotographerDetail />} />
                       <Route path="/help" element={<Help />} />
                       <Route path="/projects" element={<Projects />} />
                       <Route path="/about" element={<About />} />

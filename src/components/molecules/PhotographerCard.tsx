@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import { Button } from '@/components/atoms/Button';
 import { SmartImage } from '@/components/atoms/SmartImage';
 import type { Photographer } from '@/types';
@@ -18,9 +19,15 @@ export function PhotographerCard({ photographer, index }: PhotographerCardProps)
   return (
     <div
       ref={ref}
-      className={`photographer-card rounded-card p-6 animate-on-scroll ${isVisible ? 'visible' : ''}`}
+      className={`photographer-card relative rounded-card p-6 animate-on-scroll ${isVisible ? 'visible' : ''}`}
       style={{ transitionDelay: `${index * 100}ms` }}
     >
+      {/* 整卡主入口：覆盖层链接，与关注按钮为兄弟节点避免交互嵌套 */}
+      <Link
+        to={`/photographers/${photographer.id}`}
+        aria-label={`查看 ${photographer.name} 的主页`}
+        className="absolute inset-0 z-[5] rounded-card focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50"
+      />
       <div className="avatar-ring w-20 h-20 rounded-full border-transparent p-0.5 mx-auto">
         <SmartImage
           src={photographer.avatarUrl}
@@ -44,7 +51,7 @@ export function PhotographerCard({ photographer, index }: PhotographerCardProps)
       </div>
       <Button
         variant="follow"
-        className={`mt-5 w-full ${followed ? 'followed' : ''}`}
+        className={`relative z-10 mt-5 w-full ${followed ? 'followed' : ''}`}
         aria-pressed={followed}
         onClick={() => toggleFollow(photographer.id)}
       >
