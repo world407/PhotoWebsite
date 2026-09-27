@@ -290,6 +290,15 @@
 - 体积影响：vendor-react 283→307KB（raw；gzip +9KB，react-helmet-async 随 PhotoDetail 静态引用进入），入口主包 104.2→104.5KB 持平；`build:ssg` 不在 CI 门禁内
 - 测试：新增 `e2e/seo.spec.ts` 5 例（sitemap 40 URL、robots 声明 Sitemap、feed 6 item、三详情页 title+JSON-LD、404 title 不残留）；E2E 74→79（本地含 4 例视觉回归，CI 75）
 
+### GitHub Pages 正式部署（2026-09-27，批次三）
+
+- ✅ CI 新增 `deploy-pages` job：main 分支推送且门禁双 Job 全绿后执行——`BASE_PATH=/PhotoWebsite/ npm run build:ssg` 预渲染 → 复制 `index.html` 为 `404.html`（未预渲染路径 SPA fallback）→ `.nojekyll` → `configure-pages` + `upload-pages-artifact` + `deploy-pages` 官方 Actions 链路
+- ✅ `vite base` 环境变量化：`process.env.BASE_PATH || '/'`——仅部署构建注入 `/PhotoWebsite/`，dev/E2E/默认构建不受影响；`main-ssg.tsx` 传 `basename: import.meta.env.BASE_URL`
+- ✅ `dirStyle: 'flat' → 'nested'`：每路由输出 `目录/index.html`，GitHub Pages 以 `/photo/1` 301 到 `/photo/1/` 提供无扩展名访问；sitemap/RSS 直接输出尾斜杠最终地址
+- ⚠️ 首次部署需在仓库 Settings → Pages 手动将 Source 设为 GitHub Actions（一次性；GITHUB_TOKEN 无 administration 权限，`enablement` 自动启用不可用，且 `administration` 并非 workflow permissions 合法作用域——写入了会导致 Invalid workflow file）
+- 线上验收通过：8 核心 URL 200；详情页预渲染 title + JSON-LD（ImageObject/Person/Article）；sitemap 40 URL 全尾斜杠；robots 含 Sitemap；feed 6 item；坏路径返回 404 fallback；子路径资产全部可达
+- 线上地址：https://world407.github.io/PhotoWebsite/
+
 ---
 
 ## 封档确认
