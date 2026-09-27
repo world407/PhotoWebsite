@@ -2,7 +2,7 @@
 
 ⚠️ **所有 AI Agent 在开始开发前必须阅读此文件。**
 
-**封档状态**：Phase 0-5 COMPLETE（Phase 5 六页审计通过，关注持久化/图片降级/摄影师主页已补齐） | 可选后续：日志详情 `/journal/:id`（详见 docs/PHASE_STATUS.md）
+**封档状态**：Phase 0-5 COMPLETE，全部可选后续（摄影师主页、日志详情）均已补齐（2026-09-27），无遗留缺口（详见 docs/PHASE_STATUS.md）
 
 ---
 

@@ -2,8 +2,8 @@
 # AGENT HANDOFF - 影·迹 PHOTOGRAPHY 项目交接文档
 
 **初版封档时间**：2026-08-16
-**最近核对**：2026-09-27 —— Phase 0-5 全部 COMPLETE：六页审计通过，裂图/孤儿入口已修，关注持久化、图片 onError 降级、摄影师主页已落地（详见 `docs/PHASE_STATUS.md`）
-**可选后续**：日志详情 `/journal/:id`
+**最近核对**：2026-09-27 —— Phase 0-5 全部 COMPLETE：六页审计通过，裂图/孤儿入口已修，关注持久化、图片 onError 降级、摄影师主页、日志详情均已落地，无遗留缺口（详见 `docs/PHASE_STATUS.md`）
+**可选后续**：无（全部完成）
 
 > ⚠️ 本文档第 3/6/7/8 节写于 Phase 3 封档时，目录与"限制"清单已过期；实际状态以 `docs/PHASE_STATUS.md` 与代码为准。
 

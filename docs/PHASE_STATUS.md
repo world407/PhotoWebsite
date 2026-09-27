@@ -241,7 +241,7 @@
 |------|------|------|
 | About 关于 | `/about` | 理念卡 + heroStats 统计（数字滚动动画，首帧为 0 属正常）+ 4 创作方向 + 跳转按钮 |
 | Projects 摄影专题 | `/projects` | 6 专题卡，封面取真实作品、计数取真实 tag 数量，点击跳 `/gallery?tag=` |
-| Journal 摄影日志 | `/journal` | 6 篇手记列表，每篇"相关作品"跳 `/gallery?tag=`；**无日志详情页（列表页设计，P2）** |
+| Journal 摄影日志 | `/journal`、`/journal/:id` | 6 篇手记列表（整卡可进详情，每篇"相关作品"跳 `/gallery?tag=`）+ 日志详情（封面/作者卡/正文 blocks/上下篇） |
 | Contact 联系 | `/contact` | 合作方式 + 真实 mailto/帮助/作品库链接；无表单（与无后端约束一致） |
 | Favorites 收藏夹 | `/favorites` | 接 `useFavorites` 持久数据 + WorkCard 网格 + 空状态 + 滚动恢复 |
 | Photographers 摄影师 | `/photographers` | 5 张卡（真实数据）+ OrbitImages 动画；整卡可进 `/photographers/:id` 摄影师主页 |
@@ -267,9 +267,11 @@
 - 入口：PhotographerCard 整卡 overlay Link（首页与列表页两处复用卡同时生效），照片详情 PhotographerMini 姓名链接（本地用户作品作者无 id 不链接）
 - 测试：新增 `e2e/photographer-detail.spec.ts` 4 例（列表进入+零裂图零报错、关注跨页同步+刷新持久化、作品集↔详情互通、数字/非法 id 404），axe 扫描 11→12 页
 
-### 遗留 P2 缺口（审计记录，未在本轮修复）
+### 日志详情落地（2026-09-27）
 
-- Journal 无 `/journal/:id` 详情页，文章仅摘要列表
+- ✅ 新增 `/journal/:id`：文章数据抽至 `src/data/journal.ts`（slug id、封面、作者 authorId、阅读时长、正文 blocks：段落/引用/小节/配图）；详情页含面包屑、标题/日期/时长/标签、作者卡（链接摄影师主页）、16:9 封面、正文、相关作品 CTA（跳 `/gallery?tag=`）、上一篇/下一篇导航（首末篇边界正确）；非法 slug 渲染 NotFound
+- 入口：日志列表整卡 overlay Link（"相关作品"链接 z-10 仍可点，卡尾补充标签与阅读时长）
+- 测试：新增 `e2e/journal-detail.spec.ts` 5 例（列表进入+零裂图零报错、相关作品两处入口、上下篇边界、作者互通、404），移动端单列/无横溢 1 例，axe 扫描 12→13 页
 
 ---
 
@@ -281,7 +283,8 @@
 ✅ Phase 3 COMPLETE
 ✅ Phase 4 COMPLETE（2026-09-26 核对）
 ✅ Phase 5 六页审计通过并修复缺陷（2026-09-27）
+✅ Phase 5 可选后续全部补齐：摄影师主页、日志详情（2026-09-27）
 
-**可选后续：日志详情 `/journal/:id`。**
+**Phase 0-5 及全部可选后续均已 COMPLETE，无遗留缺口。**
 
-**2026-09-27 测试基线**：Vitest 65 例 / Playwright 63 例全绿，lint 零警告，build 零错误，axe 扫描 12 页零 serious。
+**2026-09-27 测试基线**：Vitest 65 例 / Playwright 70 例全绿，lint 零警告，build 零错误，axe 扫描 13 页零 serious。
