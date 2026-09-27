@@ -6,6 +6,7 @@ import { PhotographerHeader } from '@/components/organisms/PhotographerHeader';
 import { NotFound } from '@/pages/NotFound';
 import { photographers } from '@/data/mockData';
 import { useWorks } from '@/lib/works';
+import { usePageMeta } from '@/lib/usePageMeta';
 import { saveScrollPosition } from '@/lib/hooks';
 import type { Work } from '@/types';
 
@@ -25,6 +26,23 @@ export function PhotographerDetail() {
     () => photographerWorks.reduce((sum, w) => sum + w.likes, 0),
     [photographerWorks],
   );
+
+  // 路由级 title / description / Person 结构化数据
+  const pageMeta = useMemo(() => {
+    if (!photographer) return { title: '摄影师不存在 · 影·迹 PHOTOGRAPHY' };
+    return {
+      title: `${photographer.name} · 影·迹 PHOTOGRAPHY`,
+      description: photographer.bio,
+      jsonLd: {
+        '@context': 'https://schema.org',
+        '@type': 'Person',
+        name: photographer.name,
+        description: photographer.bio,
+        image: photographer.avatarUrl,
+      },
+    };
+  }, [photographer]);
+  usePageMeta(pageMeta);
 
   const openWork = (workId: number) => {
     saveScrollPosition();

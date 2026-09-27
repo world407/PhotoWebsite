@@ -262,3 +262,10 @@ export function getJournalPost(id: string | undefined): JournalPost | undefined 
   if (!id) return undefined;
   return journalPosts.find((post) => post.id === id);
 }
+
+/** "2026年5月20日" → ISO 8601（RSS pubDate 与 Article 结构化数据共用） */
+export function journalDateToIso(zhDate: string): string {
+  const m = zhDate.match(/(\d{4})年(\d{1,2})月(\d{1,2})日/);
+  if (!m) return new Date(0).toISOString();
+  return new Date(Date.UTC(Number(m[1]), Number(m[2]) - 1, Number(m[3]))).toISOString();
+}

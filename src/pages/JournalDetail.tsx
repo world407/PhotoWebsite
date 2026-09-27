@@ -1,9 +1,11 @@
+import { useMemo } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { Icon } from '@/components/atoms/Icon';
 import { SmartImage } from '@/components/atoms/SmartImage';
 import { NotFound } from '@/pages/NotFound';
-import { journalPosts, getJournalPost, type JournalBlock } from '@/data/journal';
+import { journalPosts, getJournalPost, journalDateToIso, type JournalBlock } from '@/data/journal';
 import { photographers, tagLabels } from '@/data/mockData';
+import { usePageMeta } from '@/lib/usePageMeta';
 
 function BlockRenderer({ block }: { block: JournalBlock }) {
   switch (block.type) {
@@ -90,6 +92,27 @@ function PostNav({ prev, next }: { prev?: NavPost; next?: NavPost }) {
 export function JournalDetail() {
   const { id } = useParams<{ id: string }>();
   const post = getJournalPost(id);
+
+  // 路由级 title / description / Article 结构化数据
+  const pageMeta = useMemo(() => {
+    if (!post) return { title: '文章不存在 · 影·迹 PHOTOGRAPHY' };
+    const author = photographers.find((p) => p.id === post.authorId);
+    return {
+      title: `${post.title} · 影·迹 PHOTOGRAPHY`,
+      description: post.excerpt,
+      jsonLd: {
+        '@context': 'https://schema.org',
+        '@type': 'Article',
+        headline: post.title,
+        description: post.excerpt,
+        image: post.coverUrl,
+        datePublished: journalDateToIso(post.date),
+        inLanguage: 'zh-CN',
+        ...(author && { author: { '@type': 'Person', name: author.name } }),
+      },
+    };
+  }, [post]);
+  usePageMeta(pageMeta);
 
   if (!post) return <NotFound />;
 

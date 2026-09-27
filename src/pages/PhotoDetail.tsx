@@ -12,6 +12,7 @@ import { Lightbox } from '@/components/organisms/Lightbox';
 import { useWorks } from '@/lib/works';
 import type { Work } from '@/types';
 import { useSwipe, useMediaQuery } from '@/lib/hooks';
+import { usePageMeta } from '@/lib/usePageMeta';
 import { NotFound } from '@/pages/NotFound';
 
 // WebGL 涟漪按需加载：避免 ogl+motion（vendor-webgl 约 219KB）进入首屏关键路径；
@@ -55,6 +56,27 @@ export function PhotoDetail() {
   useEffect(() => {
     setLightboxIndex(currentIndex >= 0 ? currentIndex : 0);
   }, [currentIndex]);
+
+  // 路由级 title / description / ImageObject 结构化数据
+  const pageMeta = useMemo(() => {
+    if (!currentWork) return { title: '作品不存在 · 影·迹 PHOTOGRAPHY' };
+    return {
+      title: `${currentWork.title} · 影·迹 PHOTOGRAPHY`,
+      description: currentWork.description,
+      jsonLd: {
+        '@context': 'https://schema.org',
+        '@type': 'ImageObject',
+        name: currentWork.title,
+        description: currentWork.description,
+        contentUrl: currentWork.fullUrl || currentWork.imageUrl,
+        thumbnailUrl: currentWork.imageUrl,
+        datePublished: currentWork.createdAt,
+        author: { '@type': 'Person', name: currentWork.author },
+        inLanguage: 'zh-CN',
+      },
+    };
+  }, [currentWork]);
+  usePageMeta(pageMeta);
 
   const goToWork = useCallback((work: Work) => {
     navigate(`/photo/${work.id}`);
