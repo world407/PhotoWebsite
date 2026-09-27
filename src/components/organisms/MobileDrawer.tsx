@@ -21,6 +21,8 @@ interface MobileDrawerProps {
 const drawerItems = [
   { label: '首页', href: '/' },
   { label: '探索', href: '/gallery' },
+  { label: '摄影专题', href: '/projects' },
+  { label: '摄影日志', href: '/journal' },
   { label: '收藏夹', href: '/favorites' },
   { label: '摄影师', href: '/photographers' },
   { label: '关于', href: '/about' },

@@ -7,6 +7,8 @@ const footerLinks = {
   quickLinks: [
     { label: '首页', href: '/' },
     { label: '探索', href: '/gallery' },
+    { label: '摄影专题', href: '/projects' },
+    { label: '摄影日志', href: '/journal' },
     { label: '摄影师', href: '/photographers' },
     { label: '关于', href: '/about' },
   ],

@@ -8,6 +8,11 @@ const PAGES = [
   { path: '/favorites', name: '收藏夹（游客）' },
   { path: '/upload', name: '上传（游客引导）' },
   { path: '/photo/999999', name: '404' },
+  { path: '/about', name: '关于' },
+  { path: '/projects', name: '摄影专题' },
+  { path: '/journal', name: '摄影日志' },
+  { path: '/contact', name: '联系我们' },
+  { path: '/photographers', name: '摄影师' },
 ] as const;
 
 async function audit(page: Page) {

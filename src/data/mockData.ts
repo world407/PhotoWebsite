@@ -313,8 +313,9 @@ export const works: Work[] = [
     tag: 'street',
     tags: ['地铁', '人文', '都市'],
     aspectRatio: 600 / 900,
-    imageUrl: img('1515347621331-257a04a35091', 600, 900),
-    fullUrl: img('1515347621331-257a04a35091', 1600, 2400),
+    // 原 Unsplash 源图（photo-1515347621331-257a04a35091）已被删除返回 404，替换为同主题轨道交通图
+    imageUrl: img('1474487548417-781cb71495f3', 600, 900),
+    fullUrl: img('1474487548417-781cb71495f3', 1600, 2400),
     description: '早高峰地铁里的人们',
     location: '香港 · 中环站',
     exif: { camera: 'Fujifilm X100V', lens: '23mm f/2', aperture: 'f/2.8', shutterSpeed: '1/60s', iso: 1600, focalLength: '23mm' },
